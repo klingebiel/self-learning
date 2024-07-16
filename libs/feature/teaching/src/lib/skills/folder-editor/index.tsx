@@ -17,6 +17,7 @@ import {
 } from "./skill-display";
 import { SkillRepository } from "@prisma/client";
 import { SkillFolderTable } from "./folder-table";
+import { useTranslation } from "react-i18next";
 
 export function SkillFolderEditor({
 	repository,
@@ -134,9 +135,10 @@ function SidebarContentEditor({
 	changeEditTarget: SkillSelectHandler;
 	repository: SkillRepository;
 }) {
+	const { t } = useTranslation();
 	return (
 		<>
-			<span className="text-2xl font-semibold text-secondary">Skillkarten editieren</span>
+			<span className="text-2xl font-semibold text-secondary">{t("edit_skillcard")}</span>
 
 			<RepositoryInfoMemorized repository={repository} />
 			<Divider />
@@ -147,7 +149,7 @@ function SidebarContentEditor({
 					onSkillSelect={changeEditTarget}
 				/>
 			) : (
-				"Einen Skill aus der Liste auswählen um das Bearbeiten zu starten..."
+				t("skillcard_info_text")
 			)}
 		</>
 	);

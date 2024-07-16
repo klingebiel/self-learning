@@ -1,9 +1,11 @@
 import { LabeledField } from "@self-learning/ui/forms";
 import { Feedback } from "../../feedback";
 import { useQuestion } from "../../use-question-hook";
+import { useTranslation } from "react-i18next";
 
 export default function ExactAnswer() {
 	const { question, answer, setAnswer, evaluation } = useQuestion("exact");
+	const { t } = useTranslation();
 
 	return (
 		<>
@@ -26,7 +28,7 @@ export default function ExactAnswer() {
 			{evaluation && (
 				<Feedback isCorrect={evaluation.isCorrect}>
 					<div className="flex flex-col gap-2">
-						<span>Akzeptierte Antworten:</span>
+						<span>{t("accepted_answers")}:</span>
 
 						<ul className="list-inside list-disc">
 							{question.acceptedAnswers.map(ans => (

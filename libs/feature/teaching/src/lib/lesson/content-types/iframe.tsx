@@ -2,8 +2,10 @@ import { getContentTypeDisplayName, PDF } from "@self-learning/types";
 import { SectionCard, SectionCardHeader } from "@self-learning/ui/common";
 import { LabeledField } from "@self-learning/ui/forms";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export function IFrameInput({ index }: { index: number }) {
+	const { t } = useTranslation();
 	const { control } = useFormContext<{ content: PDF[] }>();
 	const { update } = useFieldArray<{ content: PDF[] }>({
 		name: "content"
@@ -17,7 +19,7 @@ export function IFrameInput({ index }: { index: number }) {
 		<SectionCard>
 			<SectionCardHeader
 				title={getContentTypeDisplayName("iframe")}
-				subtitle="Verlinke eine externe Webseite. Hinweis: Nicht alle Webseiten erlauben das Einbetten von iFrames."
+				subtitle={t("iframe_subtitle")}
 			/>
 
 			<div className="flex flex-col gap-8">

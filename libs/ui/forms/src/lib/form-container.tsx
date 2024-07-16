@@ -76,16 +76,30 @@ export function Title({
 
 export function SidebarSection({ children }: { children: React.ReactNode }) {
 	return (
-		<section className="flex flex-col gap-4 border-b border-light-border py-4 last:border-b-0">
+		<section
+			className={`ml-3 flex flex-col gap-4 border-b border-light-border py-4 last:border-b-0`}
+		>
 			{children}
 		</section>
 	);
 }
 
-export function SidebarSectionTitle({ title, subtitle }: { title: string; subtitle: string }) {
+export function SidebarSectionTitle({
+	children,
+	title,
+	subtitle
+}: {
+	title: string;
+	subtitle: string;
+	children?: React.ReactNode;
+}) {
 	return (
 		<div>
-			<h2 className="text-xl">{title}</h2>
+			<div className={"flex items-center justify-between"}>
+				<h2 className="text-xl">{title}</h2>
+
+				{children && <div className="flex-shrink-0">{children}</div>}
+			</div>
 			<span className="text-sm text-light">{subtitle}</span>
 		</div>
 	);

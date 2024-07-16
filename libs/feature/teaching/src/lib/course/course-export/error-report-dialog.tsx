@@ -3,6 +3,7 @@ import { CenteredContainer } from "@self-learning/ui/layouts";
 import { IncompleteNanoModuleExport, MissedElement } from "@self-learning/lia-exporter";
 import Link from "next/link";
 import { CourseFormModel } from "../course-form-model";
+import { useTranslation } from "react-i18next";
 
 /**
  * Generates a Link to the quiz with the given index in a uniform format.
@@ -46,6 +47,7 @@ function ErrorMessageForReportItem({
 	courseUrlPath: string;
 	missedItem: MissedElement;
 }) {
+	const { t } = useTranslation();
 	switch (missedItem.type) {
 		case "programming":
 			if (missedItem.cause === "unsupportedLanguage") {
@@ -54,41 +56,33 @@ function ErrorMessageForReportItem({
 						<QuestionLink
 							courseUrlPath={courseUrlPath}
 							quizIndex={missedItem.index}
-							questionType="Programmieraufgabe"
+							questionType={t("programming_task")}
 						/>{" "}
-						konnte nicht ausführbar gemacht werden, da für{" "}
-						<span className="font-mono">{missedItem.language}</span> keine
-						Laufzeitumgebung zur Verfügung steht.
+						{t("unsupported_language_text_1")}{" "}
+						<span className="font-mono">{missedItem.language}</span>{" "}
+						{t("unsupported_language_text_2")}
 					</>
 				);
 			}
 			break;
 		case "programmingUnspecific":
 			if (missedItem.cause === "unsupportedSolution") {
-				return (
-					<>
-						Für Programmieraufgaben können keine automatisierte Eingabeüberprüfungen
-						exportiert werden.
-					</>
-				);
+				return <>{t("unsupported_solution_text_1")}</>;
 			} else if (missedItem.cause === "hintsUnsupported") {
-				return <>Für Programmieraufgaben können keine Hints erstellt werden.</>;
+				return <>{t("unsupported_hints_text")}</>;
 			}
 			break;
 		case "clozeText":
 			if (missedItem.cause === "unsupportedAnswerType") {
 				return (
 					<>
-						Für den{" "}
+						{t("unsupported_answer_text_1")}{" "}
 						<QuestionLink
 							courseUrlPath={courseUrlPath}
 							quizIndex={missedItem.index}
 							questionType="Lückentext"
 						/>{" "}
-						konnten eine oder mehrere Lücken nicht korrekt exportiert werden. Es ist
-						nicht möglich Lücken mit mehreren Antworten zu exportieren, diese Lücken
-						werden als Einzelantwort behandelt. Die korrekte Antwort entspricht dabei
-						der ersten Antwort alle Möglichen.
+						{t("unsupported_answer_text_2")}
 					</>
 				);
 			}
@@ -99,27 +93,27 @@ function ErrorMessageForReportItem({
 					<QuestionLink
 						courseUrlPath={courseUrlPath}
 						quizIndex={missedItem.index}
-						questionType="Frage"
+						questionType={t("question")}
 					/>{" "}
-					konnte nicht exportiert werden, da der Fragetyp{" "}
-					<span className="font-mono">{missedItem.questionType}</span> nicht unterstützt
-					wird.
+					{t("unknown_question_type_text_1")}{" "}
+					<span className="font-mono">{missedItem.questionType}</span>{" "}
+					{t("unknown_question_type_text_2")}
 				</>
 			);
 		case "article": {
 			const element =
 				missedItem.cause.length > 1
-					? "folgende Elemente nicht unterstützt werden"
-					: "folgendes Element nicht unterstützt wird";
+					? t("following_unsupported_items")
+					: t("following_unsupported_item");
 			return (
 				<>
-					`Der Artikel konnte nicht vollständig exportiert werden, da ${element}: $
-					{missedItem.cause.join(", ")}`
+					{t("unsupported_article")}
+					{element}: {missedItem.cause.join(", ")}'
 				</>
 			);
 		}
 	}
-	return <>Unbekannter Fehler</>;
+	return <>{t("unknown_error")}</>;
 }
 
 /**
@@ -129,12 +123,15 @@ function ErrorMessageForReportItem({
  * @returns A section title including a link to visit the nanomodule, which can be used as title for a collapsible box
  */
 function SectionTitle({ slug, item }: { slug: string; item: IncompleteNanoModuleExport }) {
+	const { t } = useTranslation();
 	return (
 		<div className="flex">
 			<Link href={`/courses/${slug}/${item.nanomodule.slug}`} target="_blank">
 				<div className="text-lg text-secondary">{item.nanomodule.name}</div>
 			</Link>
-			<p className="ml-2 text-lg font-normal">{`(${item.missedElements.length} unvollständige Elemente)`}</p>
+			<p className="ml-2 text-lg font-normal">
+				{`(${item.missedElements.length} ${t("incomplete_elements")})`}{" "}
+			</p>
 		</div>
 	);
 }
@@ -154,16 +151,17 @@ export function ErrorReportDialog({
 	course: CourseFormModel;
 	onClose: () => void;
 }) {
-	const element = report.length > 1 ? "Einige Elemente werden" : "Ein Element wird";
+	const { t } = useTranslation();
+	const element = report.length > 1 ? t("some_elements") : t("one_element");
 
 	return (
 		<CenteredContainer>
 			<DialogWithReactNodeTitle
 				style={{ height: "80vh", width: "80vw", overflow: "auto" }}
-				title={`${course.title} erfolgreich exportiert`}
+				title={`${course.title} ${t("successfully_exported")}`}
 				onClose={onClose}
 			>
-				<div className="mt-[-1rem] mb-4">{`${element} nicht vollständig in LiaScript unterstützt:`}</div>
+				<div className="mt-[-1rem] mb-4">{`${element} ${t("lia_script_unsupported")}`}</div>
 				<div className="scroll flex-grow overflow-auto">
 					{report.map(item => (
 						<div className="mb-2">
@@ -190,7 +188,7 @@ export function ErrorReportDialog({
 							onClose();
 						}}
 					>
-						Schließen
+						{t("close")}
 					</button>
 				</div>
 			</DialogWithReactNodeTitle>

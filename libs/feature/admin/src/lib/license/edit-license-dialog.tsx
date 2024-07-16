@@ -11,9 +11,11 @@ import {
 	showToast
 } from "@self-learning/ui/common";
 import { LabeledField } from "@self-learning/ui/forms";
+import { t } from "i18next";
 import { OpenAsJsonButton } from "libs/feature/teaching/src/lib/json-editor-dialog";
 import { useState } from "react";
 import { FormProvider, useForm, useFormContext, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export function CreateLicenseDialog({ onClose }: { onClose: OnDialogCloseFn<License> }) {
 	const { mutateAsync: createLicense } = trpc.licenseRouter.createAsAdmin.useMutation();
@@ -24,16 +26,15 @@ export function CreateLicenseDialog({ onClose }: { onClose: OnDialogCloseFn<Lice
 			const result = await createLicense({ license: license });
 			showToast({
 				type: "success",
-				title: "Lizenz erstellt!",
+				title: t("license_created"),
 				subtitle: result.name
 			});
 			onClose(result);
 		} catch (err) {
 			showToast({
 				type: "error",
-				title: "Lizenz konnte nicht erstellt werden!",
-				subtitle:
-					"Das Erstellen der Lizenz ist fehlgeschlagen. Siehe Konsole für mehr Informationen."
+				title: t("license_not_created"),
+				subtitle: t("license_not_created_text")
 			});
 		}
 	}
@@ -42,7 +43,7 @@ export function CreateLicenseDialog({ onClose }: { onClose: OnDialogCloseFn<Lice
 		<LicenseFormModal
 			license={{
 				licenseId: 0,
-				name: "Neue Lizenz",
+				name: t("new_license"),
 				url: "",
 				logoUrl: "",
 				licenseText: "",
@@ -63,6 +64,7 @@ export function EditLicenseDialog({
 	licenseId: number;
 	onClose: OnDialogCloseFn<License>;
 }) {
+	const { t } = useTranslation();
 	const { mutateAsync: updateLicense } = trpc.licenseRouter.updateAsAdmin.useMutation();
 	const { data: license, isLoading } = trpc.licenseRouter.getOne.useQuery({
 		licenseId
@@ -73,16 +75,15 @@ export function EditLicenseDialog({
 			const result = await updateLicense({ license, licenseId });
 			showToast({
 				type: "success",
-				title: "Lizenz gespeichert!",
+				title: t("license_saved"),
 				subtitle: result.name
 			});
 			onClose(result);
 		} catch (err) {
 			showToast({
 				type: "error",
-				title: "Lizenz konnte nicht gespeichert werden!",
-				subtitle:
-					"Das Speichern der Lizenz ist fehlgeschlagen. Siehe Konsole für mehr Informationen."
+				title: t("license_not_saved"),
+				subtitle: t("license_not_saved_text")
 			});
 		}
 	}
@@ -94,8 +95,8 @@ export function EditLicenseDialog({
 	} else {
 		showToast({
 			type: "error",
-			title: "Lizenz nicht gefunden!",
-			subtitle: "Die Lizenz konnte nicht gefunden werden. Erstellen Sie eine neue."
+			title: t("license_not_found"),
+			subtitle: t("license_not_found_text")
 		});
 		return null;
 	}
@@ -114,7 +115,7 @@ function LicenseFormModal({
 		<Dialog
 			style={{ height: "80vh", width: "60vw", overflow: "auto" }}
 			onClose={() => onClose(undefined)}
-			title={license?.name ?? "Neue Lizenz"}
+			title={license?.name ?? t("new license")}
 		>
 			{license && (
 				<LicenseForm onClose={onClose} initialLicense={license} onSubmit={onSubmit} />
@@ -132,6 +133,7 @@ function LicenseForm({
 	onSubmit: (license: License) => void;
 	onClose: OnDialogCloseFn<License>;
 }) {
+	const { t } = useTranslation();
 	const form = useForm({
 		resolver: zodResolver(licenseSchema),
 		defaultValues: initialLicense
@@ -152,7 +154,7 @@ function LicenseForm({
 
 				<DialogActions onClose={onClose}>
 					<button className="btn-primary" type="submit">
-						Speichern
+						{t("save")}
 					</button>
 				</DialogActions>
 			</form>
@@ -161,6 +163,7 @@ function LicenseForm({
 }
 
 function LicensePreviewModal() {
+	const { t } = useTranslation();
 	const [viewLicenseDialog, setViewLicenseDialog] = useState(false);
 	const { watch } = useFormContext<License>();
 	const formData = watch();
@@ -172,7 +175,7 @@ function LicensePreviewModal() {
 				className="btn-stroked rounded"
 				onClick={() => setViewLicenseDialog(true)}
 			>
-				<span>Vorschau</span>
+				<span>{t("preview")}</span>
 			</button>
 			{viewLicenseDialog && (
 				<LicenseViewModal
@@ -187,6 +190,7 @@ function LicensePreviewModal() {
 }
 
 function LicenseDataEditSection() {
+	const { t } = useTranslation();
 	const { register, control, formState, setValue } = useFormContext<License>();
 	const selectable = useWatch({ control: control, name: "selectable" });
 	const oerCompatible = useWatch({ control: control, name: "oerCompatible" });
@@ -196,21 +200,21 @@ function LicenseDataEditSection() {
 
 	return (
 		<section className="flex flex-col rounded-lg border border-light-border p-4">
-			<h2 className="mb-4 text-2xl">Daten</h2>
+			<h2 className="mb-4 text-2xl">{t("data")}</h2>
 			<div className="flex flex-col gap-4">
-				<LabeledField label="Name" error={errors.name?.message}>
+				<LabeledField label={t("name")} error={errors.name?.message}>
 					<input className="textfield" type={"text"} {...register("name")} />
 				</LabeledField>
-				<LabeledField label="Lizenz Url" error={errors.url?.message}>
+				<LabeledField label={t("license_url")} error={errors.url?.message}>
 					<input className="textfield" type={"text"} {...register("url")} />
 				</LabeledField>
-				<LabeledField label="Lizenz ImageUrl" error={errors.logoUrl?.message}>
+				<LabeledField label={t("license_image_url")} error={errors.logoUrl?.message}>
 					<input className="textfield" type={"text"} {...register("logoUrl")} />
 				</LabeledField>
-				<LabeledField label="Lizenz Text" error={errors.licenseText?.message}>
+				<LabeledField label={t("license_text")} error={errors.licenseText?.message}>
 					<textarea className="textfield" {...register("licenseText")} />
 				</LabeledField>
-				<LabeledField label="Optionen" error={errors.licenseText?.message}>
+				<LabeledField label={t("options")} error={errors.licenseText?.message}>
 					<div className="flex flex-col">
 						<span className="flex items-center gap-2">
 							<input
@@ -223,9 +227,9 @@ function LicenseDataEditSection() {
 								}}
 							/>
 							<label htmlFor={"selectable"} className="text-sm font-semibold">
-								Auswählbar
+								{t("choosable")}
 							</label>
-							<QuestionMarkTooltip tooltipText="Entscheidet ob die Lizenz für neue Lerneinheiten ausgewählt werden kann. Bestehende Zuordnungen bleiben bestehen" />
+							<QuestionMarkTooltip tooltipText={t("tooltip_choosable")} />
 						</span>
 						<span className="flex items-center gap-2">
 							<input
@@ -238,9 +242,9 @@ function LicenseDataEditSection() {
 								}}
 							/>
 							<label htmlFor={"oerCompatible"} className="text-sm font-semibold">
-								Export erlaubt
+								{t("export_allowed")}
 							</label>
-							<QuestionMarkTooltip tooltipText="Entscheidet ob die LiaScript-Exportfunktion bei Lerneinheiten mit dieser Lizenz verwendet werden kann." />
+							<QuestionMarkTooltip tooltipText={t("export_allowed_tooltip")} />
 						</span>
 						<span className="flex items-center gap-2">
 							<input
@@ -253,9 +257,9 @@ function LicenseDataEditSection() {
 								}}
 							/>
 							<label htmlFor={"defaultSuggestion"} className="text-sm font-semibold">
-								Standardlizenz
+								{t("standard_license")}
 							</label>
-							<QuestionMarkTooltip tooltipText="Eine Standardlizenz wird für alle neuen Lerneinheiten vorgeschlagen. Alle Lerneinheiten ohne zugeordnete Lizenz erhalten ebenfalls die Standardlizenz. Es kann nur eine Standardlizenz geben." />
+							<QuestionMarkTooltip tooltipText={t("standard_license_tooltip")} />
 						</span>
 					</div>
 				</LabeledField>

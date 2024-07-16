@@ -5,6 +5,7 @@ import { ImageCard } from "@self-learning/ui/common";
 import { ItemCardGrid } from "@self-learning/ui/layouts";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 async function getSubjects() {
 	return await database.subject.findMany({
@@ -37,10 +38,11 @@ export const getServerSideProps: GetServerSideProps<SubjectsProps> = async () =>
 };
 
 export default function Subjects({ subjects }: SubjectsProps) {
+	const { t } = useTranslation();
 	return (
 		<div className="bg-gray-50 py-16">
 			<div className="mx-auto max-w-screen-xl px-4 xl:px-0">
-				<h1 className="mb-16 text-4xl sm:text-6xl">Fachgebiete</h1>
+				<h1 className="mb-16 text-4xl sm:text-6xl">{t("subjects")}</h1>
 				<ItemCardGrid>
 					{subjects.map(subject => (
 						<SubjectCard key={subject.slug} subject={subject} />
@@ -52,6 +54,7 @@ export default function Subjects({ subjects }: SubjectsProps) {
 }
 
 function SubjectCard({ subject }: { subject: SubjectsProps["subjects"][0] }) {
+	const { t } = useTranslation();
 	return (
 		<Link href={`/subjects/${subject.slug}`}>
 			<ImageCard
@@ -65,8 +68,8 @@ function SubjectCard({ subject }: { subject: SubjectsProps["subjects"][0] }) {
 						<span>
 							{subject._count.specializations}{" "}
 							{subject._count.specializations === 1
-								? "Spezialisierung"
-								: "Spezialisierungen"}
+								? t("specialization")
+								: t("specializations")}
 						</span>
 					</span>
 				}

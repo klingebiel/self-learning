@@ -3,8 +3,10 @@ import { trpc } from "@self-learning/api-client";
 import { AuthorChip, ImageOrPlaceholder, LoadingBox } from "@self-learning/ui/common";
 import { AdminGuard, CenteredSection, useRequiredSession } from "@self-learning/ui/layouts";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 export default function SubjectsPage() {
+	const { t } = useTranslation();
 	const { data: subjects } = trpc.subject.getAllForAdminPage.useQuery();
 
 	const session = useRequiredSession();
@@ -15,11 +17,11 @@ export default function SubjectsPage() {
 	return (
 		<CenteredSection className="bg-gray-50">
 			<div className="mb-16 flex items-center justify-between gap-4">
-				<h1 className="text-5xl">Fachgebiete</h1>
+				<h1 className="text-5xl">{t("subjects")}</h1>
 
 				<Link href="/teaching/subjects/create" className="btn-primary w-fit">
 					<PlusIcon className="icon" />
-					<span>Hinzufügen</span>
+					<span>{t("add")}</span>
 				</Link>
 			</div>
 

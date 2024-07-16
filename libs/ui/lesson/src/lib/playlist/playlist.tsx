@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type PlaylistChapter = {
 	title: string;
@@ -158,6 +159,7 @@ function Lesson({
 function PlaylistHeader({ content, course, lesson, completion }: PlaylistProps) {
 	const courseCompletion = completion?.courseCompletion;
 	const completionPercentage = courseCompletion?.completionPercentage ?? 0;
+	const { t } = useTranslation();
 
 	return (
 		<div className="sticky top-0 z-20 flex flex-col gap-4 rounded-lg bg-gray-100 pt-8">
@@ -171,7 +173,7 @@ function PlaylistHeader({ content, course, lesson, completion }: PlaylistProps) 
 				</Link>
 				<span className="text-sm text-light">
 					{courseCompletion?.completedLessonCount ?? 0} /{" "}
-					{extractLessonIds(content).length} Lerneinheiten abgeschlossen
+					{extractLessonIds(content).length} {t("units_finished")}
 				</span>
 			</div>
 			<span className="relative h-5 w-full rounded-lg bg-gray-200">
@@ -201,6 +203,7 @@ function PlaylistHeader({ content, course, lesson, completion }: PlaylistProps) 
 
 function CurrentlyPlaying({ lesson, content, course }: PlaylistProps) {
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	const currentChapter = useMemo(() => {
 		for (const chapter of content) {
@@ -241,18 +244,18 @@ function CurrentlyPlaying({ lesson, content, course }: PlaylistProps) {
 				</span>
 			</span>
 			<span className="flex justify-between">
-
 				{lesson.meta.hasQuiz && (
-
-				<Link
-					href={`/courses/${course.slug}/${lesson.slug}${
-						router.pathname.endsWith("quiz") ? "" : "/quiz"
-					}`}
-					className="btn-primary text-sm"
-					data-testid="quizLink"
-				>
-					{router.pathname.endsWith("quiz") ? "Zum Lernhinhalt" : "Zur Lernkontrolle"}
-				</Link>
+					<Link
+						href={`/courses/${course.slug}/${lesson.slug}${
+							router.pathname.endsWith("quiz") ? "" : "/quiz"
+						}`}
+						className="btn-primary text-sm"
+						data-testid="quizLink"
+					>
+						{router.pathname.endsWith("quiz")
+							? t("to_learn_content")
+							: t("to_learn_control")}
+					</Link>
 				)}
 
 				<span className="flex gap-2">
@@ -260,7 +263,7 @@ function CurrentlyPlaying({ lesson, content, course }: PlaylistProps) {
 						onClick={() => previous && navigateToLesson(previous)}
 						disabled={!previous}
 						className="rounded-lg border border-light-border p-2 disabled:text-gray-300"
-						title="Vorherige Lerneinheit"
+						title={t("previous_lesson")}
 						data-testid="previousLessonButton"
 					>
 						<ChevronDoubleLeftIcon className="h-5" />
@@ -269,7 +272,7 @@ function CurrentlyPlaying({ lesson, content, course }: PlaylistProps) {
 						onClick={() => next && navigateToLesson(next)}
 						disabled={!next}
 						className="rounded-lg border border-light-border p-2 disabled:text-gray-300"
-						title="Nächste Lerneinheit"
+						title={t("next_lesson")}
 						data-testid="nextLessonButton"
 					>
 						<ChevronDoubleRightIcon className="h-5" />

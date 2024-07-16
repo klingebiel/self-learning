@@ -11,13 +11,13 @@ import {
 import { trpc } from "@self-learning/api-client";
 import { Quiz } from "@self-learning/quiz";
 import { CourseChapter, LessonContent, LessonMeta } from "@self-learning/types";
-import { OnDialogCloseFn, SectionHeader, showToast } from "@self-learning/ui/common";
+import { SectionHeader } from "@self-learning/ui/common";
 import { useState } from "react";
-import { LessonFormModel } from "../../lesson/lesson-form-model";
 import { ChapterDialog } from "./dialogs/chapter-dialog";
-import { EditLessonDialog } from "./dialogs/edit-lesson-dialog";
 import { LessonSelector, LessonSummary } from "./dialogs/lesson-selector";
 import { useCourseContentForm } from "./use-content-form";
+import { CreateLessonDialog, EditLessonDialog } from "./dialogs/lesson-editor-dialog";
+import { useTranslation } from "react-i18next";
 
 type UseCourseContentForm = ReturnType<typeof useCourseContentForm>;
 
@@ -38,6 +38,7 @@ type UseCourseContentForm = ReturnType<typeof useCourseContentForm>;
  * )
  */
 export function CourseContentForm() {
+	const { t } = useTranslation();
 	const {
 		content,
 		updateChapter,
@@ -57,11 +58,8 @@ export function CourseContentForm() {
 		}
 		setOpenNewChapterDialog(false);
 	}
-
 	function onRemoveChapter(index: number) {
-		const confirmed = window.confirm(
-			`Kapitel "${content[index].title}" wirklich entfernen? Hinweis: Enthaltene Lerneinheiten werden nicht gelöscht.`
-		);
+		const confirmed = window.confirm(t("confirm_chapter_deletion", content[index].title));
 
 		if (confirmed) {
 			removeChapter(index);
@@ -72,9 +70,7 @@ export function CourseContentForm() {
 		chapterIndex,
 		lessonId: string
 	) => {
-		const confirmed = window.confirm(
-			"Lerneinheit wirklich entfernen? Hinweis: Die Lerneinheit wird nur aus dem Kapitel entfernt und nicht gelöscht."
-		);
+		const confirmed = window.confirm(t("confirm_lesson_deletion"));
 
 		if (confirmed) {
 			removeLesson(chapterIndex, lessonId);
@@ -83,7 +79,7 @@ export function CourseContentForm() {
 
 	return (
 		<section>
-			<SectionHeader title="Inhalt" subtitle="Der Inhalt des Kurses." />
+			<SectionHeader title={t("content")} subtitle={t("course_content_subtitle")} />
 
 			<ul className="flex flex-col gap-12">
 				{content.map((chapter, index) => (
@@ -107,7 +103,7 @@ export function CourseContentForm() {
 				onClick={() => setOpenNewChapterDialog(true)}
 			>
 				<PlusIcon className="mr-2 h-5" />
-				<span>Kapitel hinzufügen</span>
+				<span>{t("add_chapter")}</span>
 			</button>
 
 			{openNewChapterDialog && <ChapterDialog onClose={handleAddChapterDialogClose} />}
@@ -124,34 +120,9 @@ function LessonNode({
 	moveLesson: UseCourseContentForm["moveLesson"];
 	onRemove: () => void;
 }) {
+	const { t } = useTranslation();
 	const { data } = trpc.lesson.findOne.useQuery({ lessonId: lesson.lessonId });
 	const [lessonEditorDialog, setLessonEditorDialog] = useState(false);
-	const { mutateAsync: editLessonAsync } = trpc.lesson.edit.useMutation();
-
-	const handleEditDialogClose: OnDialogCloseFn<LessonFormModel> = async updatedLesson => {
-		if (!updatedLesson) {
-			return setLessonEditorDialog(false);
-		}
-
-		try {
-			const result = await editLessonAsync({
-				lesson: updatedLesson,
-				lessonId: lesson.lessonId
-			});
-			showToast({
-				type: "success",
-				title: "Lerneinheit gespeichert!",
-				subtitle: result.title
-			});
-			setLessonEditorDialog(false);
-		} catch (error) {
-			showToast({
-				type: "error",
-				title: "Fehler",
-				subtitle: "Die Lernheit konnte nicht gespeichert werden."
-			});
-		}
-	};
 
 	return (
 		<span className="flex justify-between gap-4 rounded-lg bg-white px-4 py-2">
@@ -159,7 +130,7 @@ function LessonNode({
 				<div className="flex gap-4">
 					<button
 						type="button"
-						title="Nach oben"
+						title={t("up")}
 						className="rounded p-1 hover:bg-gray-200"
 						onClick={() => moveLesson(lesson.lessonId, "up")}
 					>
@@ -167,7 +138,7 @@ function LessonNode({
 					</button>
 					<button
 						type="button"
-						title="Nach unten"
+						title={t("down")}
 						className="rounded p-1 hover:bg-gray-200"
 						onClick={() => moveLesson(lesson.lessonId, "down")}
 					>
@@ -184,8 +155,8 @@ function LessonNode({
 
 					{lessonEditorDialog && (
 						<EditExistingLessonDialog
+							setLessonEditorDialog={setLessonEditorDialog}
 							lessonId={lesson.lessonId}
-							onClose={handleEditDialogClose}
 						/>
 					)}
 				</button>
@@ -194,14 +165,14 @@ function LessonNode({
 			<div className="flex gap-4">
 				{(data?.meta as LessonMeta)?.hasQuiz && (
 					<span className="rounded-full bg-secondary px-3 py-[2px] text-xs font-medium text-white">
-						Lernkontrolle
+						{t("learn_check")}
 					</span>
 				)}
 
 				<button
 					type="button"
 					className="text-gray-400 hover:text-red-500"
-					title="Entfernen"
+					title={t("remove")}
 					onClick={onRemove}
 				>
 					<XMarkIcon className="h-4 " />
@@ -230,38 +201,17 @@ function ChapterNode({
 	onRemove: () => void;
 	removeLesson: UseCourseContentForm["removeLesson"];
 }) {
+	const { t } = useTranslation();
 	const [lessonSelectorOpen, setLessonSelectorOpen] = useState(false);
 	const [createLessonDialogOpen, setCreateLessonDialogOpen] = useState(false);
 	const [editChapterDialogOpen, setEditChapterDialogOpen] = useState(false);
 	const [expanded, setExpanded] = useState(true);
-	const { mutateAsync: createLessonAsync } = trpc.lesson.create.useMutation();
 
 	function onCloseLessonSelector(lesson?: LessonSummary) {
 		setLessonSelectorOpen(false);
 
 		if (lesson) {
 			onLessonAdded(index, lesson);
-		}
-	}
-
-	async function handleLessonEditorClosed(lesson?: LessonFormModel) {
-		if (!lesson) {
-			return setCreateLessonDialogOpen(false);
-		}
-
-		try {
-			console.log("Creating lesson...", lesson);
-			const result = await createLessonAsync(lesson);
-			showToast({ type: "success", title: "Lernheit erstellt", subtitle: result.title });
-			onLessonAdded(index, { lessonId: result.lessonId });
-			setCreateLessonDialogOpen(false);
-		} catch (error) {
-			console.error(error);
-			showToast({
-				type: "error",
-				title: "Fehler",
-				subtitle: "Lerneinheit konnte nicht erstellt werden."
-			});
 		}
 	}
 
@@ -317,7 +267,7 @@ function ChapterNode({
 						<div className="flex gap-4">
 							<button
 								type="button"
-								title="Nach oben"
+								title={t("up")}
 								className="rounded p-1 hover:bg-gray-300"
 								onClick={() => moveChapter(index, "up")}
 							>
@@ -325,7 +275,7 @@ function ChapterNode({
 							</button>
 							<button
 								type="button"
-								title="Nach unten"
+								title={t("down")}
 								className="rounded p-1 hover:bg-gray-300"
 								onClick={() => moveChapter(index, "down")}
 							>
@@ -337,7 +287,7 @@ function ChapterNode({
 								onClick={() => setEditChapterDialogOpen(true)}
 							>
 								<PencilIcon className="icon" />
-								<span>Editieren</span>
+								<span>{t("edit")}</span>
 							</button>
 						</div>
 
@@ -348,7 +298,7 @@ function ChapterNode({
 								onClick={() => setCreateLessonDialogOpen(true)}
 							>
 								<PlusIcon className="icon" />
-								<span>Neue Lerneinheit erstellen</span>
+								<span>{t("create_unit")}</span>
 							</button>
 
 							<button
@@ -357,12 +307,12 @@ function ChapterNode({
 								onClick={() => setLessonSelectorOpen(true)}
 							>
 								<LinkIcon className="icon" />
-								<span>Lerneinheit verknüpfen</span>
+								<span>{t("connect_lesson")}</span>
 							</button>
 						</div>
 
 						<button type="button" className="btn-stroked" onClick={onRemove}>
-							<span>Entfernen</span>
+							<span>{t("remove")}</span>
 						</button>
 					</div>
 				</>
@@ -371,7 +321,9 @@ function ChapterNode({
 			{lessonSelectorOpen && (
 				<LessonSelector open={lessonSelectorOpen} onClose={onCloseLessonSelector} />
 			)}
-			{createLessonDialogOpen && <EditLessonDialog onClose={handleLessonEditorClosed} />}
+			{createLessonDialogOpen && (
+				<CreateLessonDialog setCreateLessonDialogOpen={setCreateLessonDialogOpen} />
+			)}
 			{editChapterDialogOpen && (
 				<ChapterDialog chapter={chapter} onClose={handleEditChapterDialogClosed} />
 			)}
@@ -381,38 +333,33 @@ function ChapterNode({
 
 function EditExistingLessonDialog({
 	lessonId,
-	onClose
+	setLessonEditorDialog
 }: {
 	lessonId: string;
-	onClose: OnDialogCloseFn<LessonFormModel>;
+	setLessonEditorDialog: (value: boolean) => void;
 }) {
 	const { data } = trpc.lesson.findOneAllProps.useQuery({ lessonId });
-
 	return data ? (
 		<EditLessonDialog
-			onClose={onClose}
+			setLessonEditorDialog={setLessonEditorDialog}
 			initialLesson={{
 				...data,
-				requirements: [
-					{
-						name: "",
-						description: null,
-						children: [],
-						id: "",
-						repositoryId: "",
-						parents: []
-					}
-				],
-				teachingGoals: [
-					{
-						description: null,
-						name: "",
-						id: "",
-						children: [],
-						repositoryId: "",
-						parents: []
-					}
-				],
+				requirements: data.requirements.map(req => ({
+					id: req.id,
+					name: req.name,
+					description: req.description,
+					children: req.children.map(c => c.name),
+					repositoryId: req.repositoryId,
+					parents: req.parents.map(p => p.name)
+				})),
+				teachingGoals: data.teachingGoals.map(goal => ({
+					id: goal.id,
+					name: goal.name,
+					description: goal.description,
+					children: goal.children.map(c => c.name),
+					repositoryId: goal.repositoryId,
+					parents: goal.parents.map(p => p.name)
+				})),
 				// currently there is no license label in the UI so we don't need to set this; see sample implementation below
 				// licenseId: data.licenseId ?? trpc.licenseRouter.getDefault.useQuery().data?.licenseId ?? 0,
 				authors: data.authors.map(a => ({ username: a.username })),

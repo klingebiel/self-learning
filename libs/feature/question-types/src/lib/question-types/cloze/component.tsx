@@ -5,6 +5,7 @@ import { createCloze, Gap } from "./cloze-parser";
 import ReactMarkdown from "react-markdown";
 import { rehypePlugins, remarkPlugins } from "@self-learning/markdown";
 import { Selection } from "@self-learning/ui/common";
+import { useTranslation } from "react-i18next";
 type SetAnswerFn = (index: number, answer: string) => void;
 
 export default function ClozeAnswer() {
@@ -20,6 +21,7 @@ export default function ClozeAnswer() {
 		},
 		[setAnswer]
 	);
+	const { t } = useTranslation();
 
 	return (
 		<>
@@ -57,10 +59,14 @@ export default function ClozeAnswer() {
 					<ul className="flex flex-col gap-2">
 						{evaluation.incorrectAnswers.map(ans => (
 							<li key={ans.index} className="flex flex-col">
-								<span className="font-medium">Lücke {ans.index + 1}:</span>
-								<span className="pl-4">Antwort: {ans.studentAnswer}</span>
+								<span className="font-medium">
+									{t("gap")} {ans.index + 1}:
+								</span>
 								<span className="pl-4">
-									Erwartet: {ans.intendedAnswers.join(" | ")}
+									{t("answer")}: {ans.studentAnswer}
+								</span>
+								<span className="pl-4">
+									{t("expected")}: {ans.intendedAnswers.join(" | ")}
 								</span>
 							</li>
 						))}

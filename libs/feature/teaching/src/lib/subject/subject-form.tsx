@@ -7,8 +7,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { SpecializationSelector } from "../subject/subject-selector";
+import { useTranslation } from "react-i18next";
 
 export function SpecializationForm({ subtitle }: { subtitle: string }) {
+	const { t } = useTranslation();
 	const [openDialog, setOpenAddDialog] = useState(false);
 	const { control } = useFormContext<{ specializations: SpecializationRelation }>();
 	const {
@@ -25,7 +27,7 @@ export function SpecializationForm({ subtitle }: { subtitle: string }) {
 			if (specializations.find(s => s.specializationId === result.specializationId)) {
 				showToast({
 					type: "warning",
-					title: "Spezialisierung bereits vorhanden",
+					title: t("specialization_exists"),
 					subtitle: result.title
 				});
 				return;
@@ -37,19 +39,19 @@ export function SpecializationForm({ subtitle }: { subtitle: string }) {
 	};
 
 	function handleRemove(index: number) {
-		window.confirm("Spezialisierung entfernen?") && remove(index);
+		window.confirm(t("delete_specialization")) && remove(index);
 	}
 
 	return (
 		<Form.SidebarSection>
-			<Form.SidebarSectionTitle title="Spezialisierungen" subtitle={subtitle} />
+			<Form.SidebarSectionTitle title={t("specializations")} subtitle={subtitle} />
 
 			<IconButton
 				type="button"
 				data-testid="author-add"
 				onClick={() => setOpenAddDialog(true)}
-				title="Hinzufügen"
-				text="Hinzufügen"
+				title={t("add")}
+				text={t("add")}
 				icon={<PlusIcon className="h-5" />}
 			/>
 

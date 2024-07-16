@@ -1,5 +1,6 @@
 import { showToast } from "../toast/toast";
 import { useCountdownSeconds } from "../timer/timer";
+import { useTranslation } from "react-i18next";
 
 export function LoadingBox({
 	height,
@@ -53,11 +54,12 @@ export function BlockingLoadingCircle({
 }) {
 	const timeLeft = useCountdownSeconds(timeout ?? Infinity);
 	const showMsg = timeLeft === 0;
+	const { t } = useTranslation();
 
 	if (showMsg && errorMsg) {
 		showToast({
 			type: "error",
-			title: "Fehler",
+			title: t("error"),
 			subtitle: errorMsg
 		});
 	}

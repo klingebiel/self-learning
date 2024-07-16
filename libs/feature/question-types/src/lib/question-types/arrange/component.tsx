@@ -3,8 +3,10 @@ import { MarkdownViewer } from "@self-learning/ui/forms";
 import { Fragment } from "react";
 import { Feedback } from "../../feedback";
 import { useQuestion } from "../../use-question-hook";
+import { useTranslation } from "react-i18next";
 
 export default function ArrangeQuestion() {
+	const { t } = useTranslation();
 	const { answer, setAnswer, evaluation } = useQuestion("arrange");
 
 	return (
@@ -77,7 +79,7 @@ export default function ArrangeQuestion() {
 				</ul>
 
 				<div className="flex min-h-[128px] flex-col gap-4 rounded-lg bg-gray-200 p-4">
-					<span className="font-semibold">Nicht zugeordnet</span>
+					<span className="font-semibold">{t("not_assigned")}</span>
 
 					<Droppable
 						droppableId={"_init"}
@@ -127,10 +129,10 @@ export default function ArrangeQuestion() {
 									<>
 										<span className="font-semibold">{containerId}:</span>
 										<span className="pl-4">
-											Fehlende Elemente: {feedback.missing.length}
+											{t("wrong_elements")} {feedback.missing.length}
 										</span>
 										<span className="pl-4">
-											Falsche Elemente: {feedback.extra.length}
+											{t("wrong_elements")} {feedback.extra.length}
 										</span>
 									</>
 								)}

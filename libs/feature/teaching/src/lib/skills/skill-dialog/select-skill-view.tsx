@@ -1,8 +1,49 @@
-import { IconButton } from "@self-learning/ui/common";
+import { AddButton, TransparentDeleteButton } from "@self-learning/ui/common";
 import { SelectSkillDialog } from "./select-skill-dialog";
 import { useState } from "react";
 import { SkillFormModel } from "@self-learning/types";
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { LabeledField } from "@self-learning/ui/forms";
+import { useTranslation } from "react-i18next";
+
+export function LabeledFieldSelectSkillsView({
+	skills,
+	onDeleteSkill,
+	onAddSkill,
+	repoId,
+	lable
+}: {
+	skills: SkillFormModel[];
+	onDeleteSkill: (skill: SkillFormModel) => void;
+	onAddSkill: (skill: SkillFormModel[] | undefined) => void;
+	repoId: string;
+	lable: string;
+}) {
+	const [selectSkillModal, setSelectSkillModal] = useState<boolean>(false);
+	const { t } = useTranslation();
+
+	return (
+		<LabeledField
+			label={lable}
+			button={
+				<AddButton
+					onAdd={() => setSelectSkillModal(true)}
+					title={t("add")}
+					data-testid={t("needed_skills")}
+					label={<span>{t("add")}</span>}
+				/>
+			}
+		>
+			<SkillManagementComponent
+				skills={skills}
+				setSelectSkillModal={setSelectSkillModal}
+				onAddSkill={onAddSkill}
+				selectSkillModal={selectSkillModal}
+				onDeleteSkill={onDeleteSkill}
+				repoId={repoId}
+			></SkillManagementComponent>
+		</LabeledField>
+	);
+}
 
 export function SelectSkillsView({
 	skills,
@@ -16,19 +57,48 @@ export function SelectSkillsView({
 	repoId: string;
 }) {
 	const [selectSkillModal, setSelectSkillModal] = useState(false);
+	const { t } = useTranslation();
 
 	return (
-		<div className="flex flex-col">
-			<IconButton
-				type="button"
-				data-testid="BenoetigteSkills-add"
-				onClick={() => setSelectSkillModal(true)}
-				title="Hinzufügen"
-				text="Hinzufügen"
-				icon={<PlusIcon className="h-5" />}
+		<>
+			<AddButton
+				onAdd={() => setSelectSkillModal(true)}
+				title={t("add")}
+				data-testid={t("needed_skills")}
+				label={<span>{t("add")}</span>}
 			/>
+			<SkillManagementComponent
+				skills={skills}
+				setSelectSkillModal={setSelectSkillModal}
+				onAddSkill={onAddSkill}
+				selectSkillModal={selectSkillModal}
+				onDeleteSkill={onDeleteSkill}
+				repoId={repoId}
+			></SkillManagementComponent>
+		</>
+	);
+}
+
+function SkillManagementComponent({
+	skills,
+	onDeleteSkill,
+	onAddSkill,
+	repoId,
+	setSelectSkillModal,
+	selectSkillModal
+}: {
+	skills: SkillFormModel[];
+	onDeleteSkill: (skill: SkillFormModel) => void;
+	onAddSkill: (skill: SkillFormModel[] | undefined) => void;
+	repoId: string;
+	setSelectSkillModal: (value: boolean | ((prevVar: boolean) => boolean)) => void;
+	selectSkillModal: boolean;
+}) {
+	const { t } = useTranslation();
+	return (
+		<div className="flex flex-col">
 			{skills.length === 0 && (
-				<div className="mt-3 text-sm text-gray-500">Keine Skills vorhanden</div>
+				<div className="mt-3 text-sm text-gray-500">{t("no_skills_available")}</div>
 			)}
 			<div className="mt-3 max-h-40 overflow-auto">
 				{skills.map((skill, index) => (
@@ -62,6 +132,7 @@ function InlineRemoveButton({
 	onRemove: () => void;
 	onClick: () => void;
 }) {
+	const { t } = useTranslation();
 	return (
 		<div className="inline-block">
 			<div className="flex items-center rounded-lg border border-light-border bg-white text-sm">
@@ -72,14 +143,9 @@ function InlineRemoveButton({
 				>
 					{label}
 				</button>
-				<button
-					type="button"
-					data-testid="remove"
-					className="mr-2 rounded-full p-2 hover:bg-gray-50 hover:text-red-500"
-					onClick={onRemove}
-				>
-					<XMarkIcon className="h-3" />
-				</button>
+				<div className={"px-2 py-2"}>
+					<TransparentDeleteButton onDelete={onRemove} title={t("delete_skill")} />
+				</div>
 			</div>
 		</div>
 	);

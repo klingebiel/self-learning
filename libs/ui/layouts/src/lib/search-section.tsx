@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 export type SearchResultInfo = { title: string; slug: string };
 
@@ -18,12 +19,13 @@ export function SearchSection({
 	searchResultOffset?: number;
 }) {
 	const showEmptySpace = results.length === 0;
+	const { t } = useTranslation();
 	return (
 		<>
 			<div className="bg-gray-200 p-2">{title}</div>
 			<div className="w-full overflow-hidden text-ellipsis">
 				{showEmptySpace && (
-					<div className="block w-full p-2 italic text-gray-500">Keine Ergebnisse</div>
+					<div className="block w-full p-2 italic text-gray-500">{t("no_results")}</div>
 				)}
 				{results.slice(searchResultOffset, maxDisplayedSearchResults).map(result => (
 					<Link

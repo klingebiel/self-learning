@@ -1,23 +1,25 @@
 import { LicenseForm } from "@self-learning/teaching";
-import { ImageOrPlaceholder } from "@self-learning/ui/common";
 import {
 	FieldHint,
 	Form,
 	InputWithButton,
 	LabeledField,
 	MarkdownField,
-	Upload,
 	useSlugify
 } from "@self-learning/ui/forms";
 import { Controller, useFormContext } from "react-hook-form";
 import { AuthorsForm } from "../../author/authors-form";
 import { LessonFormModel } from "../lesson-form-model";
-import { LessonType } from "@prisma/client";
-import { Dispatch } from "react";
-import SkillForm from "./skills-form";
+import { SkillForm } from "./skills-form";
+import { lessonSchema } from "@self-learning/types";
+import { OpenAsJsonButton } from "../../json-editor-dialog";
+import { LabeledCheckbox } from "../../../../../../ui/forms/src/lib/labeled-checkbox";
+import { DefaultButton } from "@self-learning/ui/common";
+import { useTranslation } from "react-i18next";
 
-export function LessonInfoEditor({ setLessonType }: { setLessonType: Dispatch<LessonType> }) {
+export function LessonInfoEditor({ lesson }: { lesson?: LessonFormModel }) {
 	const form = useFormContext<LessonFormModel>();
+	const { t } = useTranslation();
 	const {
 		register,
 		control,
@@ -28,18 +30,22 @@ export function LessonInfoEditor({ setLessonType }: { setLessonType: Dispatch<Le
 
 	return (
 		<Form.SidebarSection>
-			<Form.SidebarSectionTitle
-				title="Daten"
-				subtitle="Informationen über diese Lerneinheit"
-			/>
+			<div>
+				<span className="font-semibold text-secondary">{t("edit_lesson")}</span>
+
+				<h1 className="text-2xl">{lesson?.title}</h1>
+			</div>
+
+			<Form.SidebarSectionTitle title={t("data")} subtitle={t("lesson_info")} />
+			<OpenAsJsonButton form={form} validationSchema={lessonSchema} />
 
 			<div className="flex flex-col gap-4">
-				<LabeledField label="Titel" error={errors.title?.message}>
+				<LabeledField label={t("title")} error={errors.title?.message}>
 					<input
 						{...register("title")}
 						type="text"
 						className="textfield"
-						placeholder="Die Neue Lerneinheit"
+						placeholder={t("new_lesson")}
 						onBlur={slugifyIfEmpty}
 					/>
 				</LabeledField>
@@ -49,23 +55,28 @@ export function LessonInfoEditor({ setLessonType }: { setLessonType: Dispatch<Le
 						input={
 							<input
 								className="textfield"
-								placeholder="die-neue-lerneinheit"
+								placeholder={t("new_lesson_slug")}
 								type={"text"}
 								{...register("slug")}
 							/>
 						}
 						button={
-							<button type="button" className="btn-stroked" onClick={slugifyField}>
-								Generieren
-							</button>
+							<DefaultButton onClick={slugifyField} title={"Generiere Slug"}>
+								<span className={"text-gray-600"}>{t("generate")}</span>
+							</DefaultButton>
 						}
 					/>
 					<FieldHint>
-						Der <strong>slug</strong> wird in der URL angezeigt. Muss einzigartig sein.
+						{t("lesson_slug_URL_text_1")} <strong>slug</strong>{" "}
+						{t("lesson_slug_URL_text_2")}
 					</FieldHint>
 				</LabeledField>
 
-				<LabeledField label="Untertitel" error={errors.subtitle?.message} optional={true}>
+				<LabeledField
+					label={t("subtitle")}
+					error={errors.subtitle?.message}
+					optional={true}
+				>
 					<Controller
 						control={control}
 						name="subtitle"
@@ -74,58 +85,61 @@ export function LessonInfoEditor({ setLessonType }: { setLessonType: Dispatch<Le
 								content={field.value as string}
 								setValue={field.onChange}
 								inline={true}
-								placeholder="1-2 Sätze über diese Lerneinheit."
+								placeholder={t("lesson_description_sentences")}
 							/>
 						)}
 					></Controller>
 				</LabeledField>
 
-				<LabeledField label="Lernmodell" error={errors.lessonType?.message}>
-					<select
-						{...register("lessonType")}
-						onChange={e => {
-							setLessonType(e.target.value as LessonType);
-						}}
-					>
-						<option value={""} hidden>
-							Bitte wählen...
-						</option>
-						<option value={LessonType.TRADITIONAL}>
-							Nanomodul-basiertes Lernen (Standard)
-						</option>
-						<option value={LessonType.SELF_REGULATED}>Selbstreguliertes Lernen</option>
-					</select>
-				</LabeledField>
-
-				<LabeledField label="Thumbnail" error={errors.imgUrl?.message}>
+				<LabeledField
+					label={t("description")}
+					error={errors.description?.message}
+					optional={true}
+				>
 					<Controller
 						control={control}
-						name="imgUrl"
+						name={"description"}
 						render={({ field }) => (
-							<Upload
-								key={"image"}
-								mediaType="image"
-								onUploadCompleted={field.onChange}
-								preview={
-									<ImageOrPlaceholder
-										src={field.value ?? undefined}
-										className="aspect-video w-full rounded-lg object-cover"
-									/>
-								}
-							/>
+							<MarkdownField
+								content={field.value as string}
+								setValue={field.onChange}
+								inline={true}
+								placeholder={t("lesson_description_sentences")}
+							></MarkdownField>
 						)}
-					/>
-					<FieldHint>Thumbnails werden momentan nicht in der UI angezeigt.</FieldHint>
+					></Controller>
+				</LabeledField>
+
+				<LabeledField
+					label={t("self_regulated_learning")}
+					error={errors.selfRegulatedQuestion?.message}
+					optional={false}
+				>
+					<Controller
+						control={control}
+						name={"lessonType"}
+						render={({ field }) => (
+							<LabeledCheckbox
+								label={t("active_question_and_sequential_check")}
+								checked={field.value === "SELF_REGULATED"}
+								onChange={e => {
+									field.onChange(
+										e.target.checked ? "SELF_REGULATED" : "TRADITIONAL"
+									);
+								}}
+							></LabeledCheckbox>
+						)}
+					></Controller>
 				</LabeledField>
 
 				<AuthorsForm
-					subtitle="Autoren dieser Lerneinheit."
-					emptyString="Für diese Lerneinheit sind noch keine Autoren hinterlegt."
+					subtitle={t("authors_from_lesson")}
+					emptyString={t("lesson_missing_authors")}
 				/>
 
-				<SkillForm />
-
 				<LicenseForm />
+
+				<SkillForm />
 			</div>
 		</Form.SidebarSection>
 	);

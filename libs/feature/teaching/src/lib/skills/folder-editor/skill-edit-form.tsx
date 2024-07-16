@@ -10,6 +10,7 @@ import { showToast } from "@self-learning/ui/common";
 import { SelectSkillsView } from "../skill-dialog/select-skill-view";
 import { SkillSelectHandler } from "./skill-display";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { useTranslation } from "react-i18next";
 
 export function SelectedSkillsInfoForm({
 	skills,
@@ -68,6 +69,7 @@ export function SkillInfoForm({
 		skillId: skill.id
 	});
 
+	const { t } = useTranslation();
 	const onSubmit = async (data: SkillFormModel) => {
 		await updateSkill({
 			skill: {
@@ -82,7 +84,7 @@ export function SkillInfoForm({
 
 		showToast({
 			type: "success",
-			title: "Skill gespeichert!",
+			title: t("skill_saved"),
 			subtitle: ""
 		});
 	};
@@ -102,23 +104,23 @@ export function SkillInfoForm({
 				<Form.SidebarSection>
 					<div className="flex justify-between">
 						<Form.SidebarSectionTitle
-							title="Bearbeiten"
-							subtitle="Informationen über den rechts ausgewählten Skill"
+							title={t("edit")}
+							subtitle={t("skill_info_text")}
 						/>
 						<button
 							type="button"
 							className="h-fit rounded-lg border border-light-border bg-white px-2 py-2"
-							title="Ansicht ohne Veränderungen schließen"
+							title={t("close_without_change")}
 							onClick={resetEditTarget}
 						>
 							<XMarkIcon className="h-5" />
 						</button>
 					</div>
 					<div className="flex flex-col gap-4 border-b-2 border-light-border">
-						<LabeledField label="Name" error={errors.name?.message}>
+						<LabeledField label={t("name")} error={errors.name?.message}>
 							<input type="text" className="textfield" {...form.register("name")} />
 						</LabeledField>
-						<LabeledField label="Beschreibung" error={errors.description?.message}>
+						<LabeledField label={t("description")} error={errors.description?.message}>
 							<textarea {...form.register("description")} />
 						</LabeledField>
 						<SkillToSkillDepsInfo
@@ -130,7 +132,7 @@ export function SkillInfoForm({
 					</div>
 					<div className="flex justify-between">
 						<button type="submit" className="btn-primary w-full">
-							Speichern
+							{t("save")}
 						</button>
 						<SkillDeleteOption
 							skillIds={[skill.id]}
@@ -154,6 +156,7 @@ function SkillToSkillDepsInfo({
 	repoId: string;
 	skillToChange: SkillFormModel;
 }) {
+	const { t } = useTranslation();
 	const [parentItems, setParentItems] = useState<SkillResolved["parents"]>(parents);
 	const [childItems, setChildItems] = useState<SkillResolved["children"]>(children);
 	const { setValue } = useFormContext<SkillFormModel>();
@@ -190,9 +193,7 @@ function SkillToSkillDepsInfo({
 	return (
 		<>
 			<label>
-				<span className="text-sm font-semibold">
-					{"Beinhaltet folgende Skills (Kinder):"}
-				</span>
+				<span className="text-sm font-semibold">{t("contains_skills")}</span>
 			</label>
 			<div>
 				<SelectSkillsView
@@ -215,9 +216,7 @@ function SkillToSkillDepsInfo({
 				/>
 			</div>
 			<label>
-				<span className="text-sm font-semibold">
-					{"Ist Teil von folgenden Skills (Eltern):"}
-				</span>
+				<span className="text-sm font-semibold">{t("part_of_skills")}</span>
 			</label>
 			<div>
 				<SelectSkillsView

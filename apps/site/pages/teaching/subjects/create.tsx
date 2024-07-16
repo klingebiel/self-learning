@@ -5,10 +5,12 @@ import { showToast } from "@self-learning/ui/common";
 import { AdminGuard } from "@self-learning/ui/layouts";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 export default function SubjectCreatePage() {
 	const { mutateAsync: createSubject } = trpc.subject.create.useMutation();
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	async function onSubmit(subjectFromForm: Subject) {
 		try {
@@ -16,8 +18,8 @@ export default function SubjectCreatePage() {
 			const res = await createSubject(subjectFromForm);
 			showToast({
 				type: "success",
-				title: "Fachgebiet erstellt",
-				subtitle: `Das Fachgebiet "${res.title}" wurde erstellt.`
+				title: t("created_subject"),
+				subtitle: t("subject_created", { title: res.title })
 			});
 			router.push(`/teaching/subjects/edit/${res.subjectId}`);
 		} catch (error) {
@@ -26,7 +28,7 @@ export default function SubjectCreatePage() {
 			if (error instanceof TRPCClientError) {
 				showToast({
 					type: "error",
-					title: "Fehler",
+					title: t("error"),
 					subtitle: error.message
 				});
 			}
@@ -34,7 +36,7 @@ export default function SubjectCreatePage() {
 	}
 
 	return (
-		<AdminGuard error={<>Fachgebiete können nur von Administratoren erstellt werden.</>}>
+		<AdminGuard error={<>{t("unauthorized_subject_error")}</>}>
 			<div className="flex flex-col bg-gray-50">
 				<SubjectEditor
 					initialSubject={{

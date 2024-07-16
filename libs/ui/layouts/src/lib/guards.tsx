@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { CenteredSection } from "./containers/centered-section";
 import { redirectToLogin } from "./redirect-to-login";
+import { useTranslation } from "react-i18next";
 
 /**
  * Wrapper for `useSession` from `next-auth` that redirects the user to the login page if they are not authenticated.
@@ -98,19 +99,18 @@ export function AuthorizedGuard({
 }
 
 export function Unauthorized({ children }: { children?: React.ReactNode }) {
+	const { t } = useTranslation();
 	return (
 		<CenteredSection>
 			<div className="flex flex-col gap-8">
-				<h1 className="text-5xl">Nicht autorisiert</h1>
-				<span className="text-light">
-					Diese Seite ist nur für Benutzer mit entsprechenden Rechten erreichbar.
-				</span>
+				<h1 className="text-5xl">{t("non_authorized_error")}</h1>
+				<span className="text-light">{t("non_authorized_error_desc")}</span>
 
 				{children && <div className="text-light">{children}</div>}
 
 				<Link href="/" className="btn-primary w-fit">
 					<ArrowLeftIcon className="icon" />
-					<span>Zurück zur Startseite</span>
+					<span>{t("back_to_start")}</span>
 				</Link>
 			</div>
 		</CenteredSection>

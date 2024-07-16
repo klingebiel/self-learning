@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CenteredContainer } from "@self-learning/ui/layouts";
 import { DialogWithReactNodeTitle } from "../dialog/dialog";
 import { MarkdownViewer } from "@self-learning/ui/forms";
+import { useTranslation } from "react-i18next";
 
 export function LicenseChip({
 	name,
@@ -16,6 +17,7 @@ export function LicenseChip({
 	description?: string;
 	url?: string;
 }) {
+	const { t } = useTranslation();
 	const [openModal, setOpenModal] = useState(false);
 	const isSquare = !imgUrl;
 
@@ -48,7 +50,7 @@ export function LicenseChip({
 					onClose={() => {
 						setOpenModal(false);
 					}}
-					description={description ?? "*Keine Beschreibung für diese Lizenz vorhanden*"}
+					description={description ?? t("missing_license_description")}
 					name={name}
 					logoUrl={imgUrl ?? defaultLogoUrl}
 				/>

@@ -11,6 +11,7 @@ import { CourseFormModel, courseFormSchema } from "./course-form-model";
 import { CourseInfoForm } from "./course-info-form";
 import { useState } from "react";
 import { ExportCourseDialog } from "./course-export/course-export-dialog";
+import { useTranslation } from "react-i18next";
 
 export function CourseEditor({
 	course,
@@ -19,6 +20,7 @@ export function CourseEditor({
 	course: CourseFormModel;
 	onConfirm: (course: CourseFormModel) => void;
 }) {
+	const { t } = useTranslation();
 	const isNew = course.courseId === "";
 
 	const form = useForm<CourseFormModel>({
@@ -27,7 +29,6 @@ export function CourseEditor({
 	});
 
 	const [viewExportDialog, setViewExportDialog] = useState(false);
-
 	return (
 		<div className="bg-gray-50">
 			<FormProvider {...form}>
@@ -57,7 +58,7 @@ export function CourseEditor({
 							<>
 								<div>
 									<span className="font-semibold text-secondary">
-										Kurs editieren
+										{t("edit_course")}
 									</span>
 
 									<Link href={`/courses/${course.slug}`} target="_blank">
@@ -69,7 +70,7 @@ export function CourseEditor({
 
 								<div className="flex space-x-2">
 									<button className="btn-primary w-full" type="submit">
-										{isNew ? "Erstellen" : "Speichern"}
+										{isNew ? t("create") : t("save")}
 									</button>
 									<button
 										className="btn-primary w-full text-right"
@@ -82,8 +83,8 @@ export function CourseEditor({
 
 								<CourseInfoForm />
 								<AuthorsForm
-									subtitle="Die Autoren dieses Kurses."
-									emptyString="Für diesen Kurs sind noch keine Autoren hinterlegt."
+									subtitle={t("course_authors")}
+									emptyString={t("no_course_authors")}
 								/>
 							</>
 						}
@@ -108,13 +109,11 @@ export function CourseEditor({
 
 function CourseDescriptionForm() {
 	const { control } = useFormContext<{ description: CourseFormModel["description"] }>();
+	const { t } = useTranslation();
 
 	return (
 		<section>
-			<SectionHeader
-				title="Beschreibung"
-				subtitle="Ausführliche Beschreibung dieses Kurses. Unterstützt Markdown."
-			/>
+			<SectionHeader title={t("description")} subtitle={t("detailed_course_description")} />
 			<Form.MarkdownWithPreviewContainer>
 				<Controller
 					control={control}

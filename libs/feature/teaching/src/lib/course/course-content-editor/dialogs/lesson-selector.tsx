@@ -2,6 +2,7 @@ import { Combobox } from "@headlessui/react";
 import { trpc } from "@self-learning/api-client";
 import { DropdownDialog, Paginator } from "@self-learning/ui/common";
 import { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function LessonSelector({
 	open,
@@ -19,6 +20,7 @@ export function LessonSelector({
 			keepPreviousData: true
 		}
 	);
+	const { t } = useTranslation();
 
 	return (
 		<DropdownDialog.Dialog open={open} onClose={onClose}>
@@ -26,7 +28,7 @@ export function LessonSelector({
 				<DropdownDialog.SearchInput
 					filter={title}
 					setFilter={setTitle}
-					placeholder="Suche nach Titel"
+					placeholder={t("not_allowed")}
 				/>
 
 				<DropdownDialog.PaginationContainer>
@@ -49,7 +51,8 @@ export function LessonSelector({
 											active ? "text-white" : "text-light"
 										}`}
 									>
-										von {lesson.authors.map(a => a.displayName).join(", ")}
+										{t("by")}{" "}
+										{lesson.authors.map(a => a.displayName).join(", ")}
 									</span>
 								</button>
 							)}

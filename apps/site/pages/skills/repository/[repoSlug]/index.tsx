@@ -7,17 +7,21 @@ import { LoadingBox } from "@self-learning/ui/common";
 import { SkillFormModel } from "@self-learning/types";
 import { SkillRepository } from "@prisma/client";
 import { SkillFolderEditor } from "@self-learning/teaching";
+import i18next from "i18next";
 
 interface CreateAndViewRepositoryProps {
 	repository: SkillRepository;
 	initialSkills: SkillFormModel[];
 }
+//		name: i18next.t("skills_repository_new_skillcard", { date: Date.now() }),
+//description: i18next.t("skills_repository_skillcard_description")
+//
 
 async function createNewRepository(userId: string) {
 	const newRep = {
 		ownerId: userId,
-		name: `Neue Skillkarte: ${Date.now()}`,
-		description: "Beschreibung der Skillkarte"
+		name: "hallo",
+		description: "hallo"
 	};
 	const result = await database.skillRepository.create({
 		data: newRep

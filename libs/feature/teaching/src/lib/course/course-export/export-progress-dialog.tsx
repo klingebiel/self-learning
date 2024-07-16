@@ -4,6 +4,7 @@ import { CourseFormModel } from "../course-form-model";
 import { IncompleteNanoModuleExport, exportCourseArchive } from "@self-learning/lia-exporter";
 import { useEffect, useState, useRef } from "react";
 import { trpc } from "@self-learning/api-client";
+import { useTranslation } from "react-i18next";
 
 // Optional public env variable that indicates were the storage is located
 const minioUrl = process.env["NEXT_PUBLIC_MINIO_PUBLIC_URL"];
@@ -37,7 +38,8 @@ export function ExportCourseProgressDialog({
 	onFinish: () => void;
 	onError: (report: IncompleteNanoModuleExport[]) => void;
 }) {
-	const title = `Exportiere: ${course.title}`;
+	const { t } = useTranslation();
+	const title = `${t("do_export")} ${course.title}`;
 	const [message, setMessage] = useState(`Export: ${course.title}`);
 
 	const { data, isLoading } = trpc.course.fullExport.useQuery({ slug: course.slug });
@@ -90,7 +92,7 @@ export function ExportCourseProgressDialog({
 		}
 	}, [data, isLoading, onError]);
 
-	const closeLabel = message.startsWith("Error") ? "Schließen" : "Abbrechen";
+	const closeLabel = message.startsWith("Error") ? t("close") : t("cancel");
 
 	return (
 		<CenteredContainer>

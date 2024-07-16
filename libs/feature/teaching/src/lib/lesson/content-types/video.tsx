@@ -4,8 +4,10 @@ import { LabeledField, Upload } from "@self-learning/ui/forms";
 import { VideoPlayer } from "@self-learning/ui/lesson";
 import { formatSeconds } from "@self-learning/util/common";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export function VideoInput({ index }: { index: number }) {
+	const { t } = useTranslation();
 	const { control } = useFormContext<{ content: Video[] }>();
 	const { update } = useFieldArray<{ content: Video[] }>({
 		name: "content"
@@ -18,10 +20,7 @@ export function VideoInput({ index }: { index: number }) {
 
 	return (
 		<SectionCard>
-			<SectionCardHeader
-				title="Video"
-				subtitle="Verlinke ein Video oder lade ein neues Video hoch."
-			/>
+			<SectionCardHeader title="Video" subtitle={t("video_input_subtitle")} />
 
 			<div className="flex flex-col gap-8">
 				<div className="flex flex-col gap-4">
@@ -41,12 +40,12 @@ export function VideoInput({ index }: { index: number }) {
 							/>
 						</LabeledField>
 
-						<LabeledField label="Länge in Sekunden">
+						<LabeledField label={t("length_in_seconds")}>
 							<div className="flex">
 								<input
 									className="textfield w-full"
 									type={"number"}
-									placeholder="Länge des Videos in Sekunden"
+									placeholder={t("length_in_seconds_placeholder")}
 									value={duration}
 									onChange={e =>
 										update(index, {

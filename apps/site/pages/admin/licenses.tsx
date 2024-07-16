@@ -16,10 +16,11 @@ import { Fragment, useMemo, useState } from "react";
 import { License } from "@self-learning/types";
 import Link from "next/link";
 import { ShareIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 export default function LicensesPage() {
 	useRequiredSession();
-
+	const { t } = useTranslation();
 	const [displayName, setDisplayName] = useState("");
 	const { data: licenses, isLoading } = trpc.licenseRouter.getAll.useQuery();
 	const [editTarget, setEditTarget] = useState<number | "new" | null>(null);
@@ -42,15 +43,15 @@ export default function LicensesPage() {
 		<AdminGuard>
 			<CenteredSection>
 				<div className="mb-16 flex items-center justify-between gap-4">
-					<h1 className="text-5xl">Lizenzen</h1>
+					<h1 className="text-5xl">{t("license")}</h1>
 					<button className="btn-primary" onClick={() => setEditTarget("new")}>
 						<PlusIcon className="icon h-5" />
-						<span>Lizenz hinzufügen</span>
+						<span>{t("add_license")}</span>
 					</button>
 				</div>
 
 				<SearchField
-					placeholder="Suche nach Lizenz"
+					placeholder={t("search_for_license")}
 					onChange={e => setDisplayName(e.target.value)}
 				/>
 
@@ -77,13 +78,15 @@ function LicenseTable({
 	licenses: License[];
 	changeEditTarget: (licenseId: number) => void;
 }) {
+	const { t } = useTranslation();
+
 	return (
 		<Table
 			head={
 				<>
 					<TableHeaderColumn></TableHeaderColumn>
-					<TableHeaderColumn>Name</TableHeaderColumn>
-					<TableHeaderColumn>Eigenschaften</TableHeaderColumn>
+					<TableHeaderColumn>{t("name")}</TableHeaderColumn>
+					<TableHeaderColumn>{t("properties")}</TableHeaderColumn>
 					<TableHeaderColumn></TableHeaderColumn>
 				</>
 			}
@@ -126,7 +129,7 @@ function LicenseTable({
 											className="btn-stroked"
 											onClick={() => changeEditTarget(licenseId)}
 										>
-											Editieren
+											{t("edit")}
 										</button>
 									</div>
 								</TableDataColumn>
@@ -148,6 +151,8 @@ function LicenseFeatureIcons({
 	selectable: boolean;
 	defaultSuggestion: boolean;
 }) {
+	const { t } = useTranslation();
+
 	return (
 		<>
 			{defaultSuggestion && (
@@ -156,12 +161,12 @@ function LicenseFeatureIcons({
 				</Tooltip>
 			)}
 			{oerCompatible && (
-				<Tooltip title="Erlaubt Exportfunktion">
+				<Tooltip title="Erlaubt Exportfunktion ">
 					<ShareIcon className="icon h-5" />
 				</Tooltip>
 			)}
 			{!selectable && (
-				<Tooltip title="Lizenz ist nicht in neuen Lerneinheiten auswählbar.">
+				<Tooltip title={t("license_not_choosable")}>
 					<NoSymbolIcon className="icon h-5" />
 				</Tooltip>
 			)}
@@ -170,6 +175,7 @@ function LicenseFeatureIcons({
 }
 
 export function LicenseDetail({ license }: { license: License }) {
+	const { t } = useTranslation();
 	const [viewLicenseDialog, setViewLicenseDialog] = useState(false);
 
 	function shortenLongText(url: string): string {
@@ -182,10 +188,10 @@ export function LicenseDetail({ license }: { license: License }) {
 	return (
 		<div className="grid grid-cols-2 gap-4">
 			<div className="col-span-1">
-				<div className="text-sm font-medium">Url der Lizenzwebseite:</div>
-				<div className="text-sm font-medium">Lizenzbeschreibung:</div>
-				<div className="text-sm font-medium">Auswählbar</div>
-				<div className="text-sm font-medium">OER - Kompatible:</div>
+				<div className="text-sm font-medium">{t("license_url")}</div>
+				<div className="text-sm font-medium">{t("license_description")}</div>
+				<div className="text-sm font-medium">{t("choosable")}</div>
+				<div className="text-sm font-medium">{t("compatible")}</div>
 			</div>
 			<div className="col-span-1">
 				{license.url ? (
@@ -193,7 +199,7 @@ export function LicenseDetail({ license }: { license: License }) {
 						{shortenLongText(license.url)}
 					</Link>
 				) : (
-					<div className="text-sm font-medium">Nicht definiert</div>
+					<div className="text-sm font-medium">{t("not_defined")}</div>
 				)}
 				{license.licenseText ? (
 					<div
@@ -204,10 +210,12 @@ export function LicenseDetail({ license }: { license: License }) {
 						{shortenLongText(license.licenseText)}
 					</div>
 				) : (
-					<div className="text-sm font-medium">Nicht definiert</div>
+					<div className="text-sm font-medium">{t("not_defined")}</div>
 				)}
-				<div className="text-sm font-medium">{license.selectable ? "Ja" : "Nein"}</div>
-				<div className="text-sm font-medium">{license.oerCompatible ? "Ja" : "Nein"}</div>
+				<div className="text-sm font-medium">{license.selectable ? t("yes") : t("no")}</div>
+				<div className="text-sm font-medium">
+					{license.oerCompatible ? t("yes") : t("no ")}
+				</div>
 			</div>
 			{viewLicenseDialog && (
 				<LicenseViewModal

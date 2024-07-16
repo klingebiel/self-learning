@@ -5,11 +5,11 @@ import { database } from "@self-learning/database";
 import { ResolvedValue } from "@self-learning/types";
 import { showToast } from "@self-learning/ui/common";
 import { CenteredSection } from "@self-learning/ui/layouts";
-import { endOfWeek, format, isToday, isYesterday, parseISO, startOfWeek } from "date-fns";
 import { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import Link from "next/link";
 import { ReactElement, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 type CompletedLesson = ResolvedValue<typeof getCompletedLessonsThisWeek>[0];
 
@@ -95,34 +95,33 @@ function groupCompletedLessons(
 }
 
 export default function LearningDiary({ completedLessons, goals }: LearningDiaryProps) {
+	const { t } = useTranslation();
 	return (
 		<CenteredSection className="bg-gray-50">
-			<h1 className="mb-16 text-5xl">Mein Lerntagebuch</h1>
+			<h1 className="mb-16 text-5xl">{t("my_learning_diary")}</h1>
 
 			<Goals initialValue={goals} />
 
 			<section className="mt-8 flex flex-col gap-12">
 				<CompletedSection
-					title="Heute"
-					subtitle={amount => <>Du hast heute {amount} Lerneinheiten bearbeitet.</>}
+					title={t("today")}
+					subtitle={amount => <>{t("diary_today_subtitle", { amount: amount })}</>}
 					completedLessons={completedLessons.today}
 				/>
 				<CompletedSection
-					title="Gestern"
-					subtitle={amount => <>Du hast gestern {amount} Lerneinheiten bearbeitet.</>}
+					title={t("yesterday")}
+					subtitle={amount => <>{t("diary_yesterday_subtitle", { amount: amount })}</>}
 					completedLessons={completedLessons.yesterday}
 				/>
 				<CompletedSection
-					title="Diese Woche"
-					subtitle={amount => (
-						<>Du hast in dieser Woche {amount} weitere Lerneinheiten bearbeitet.</>
-					)}
+					title={t("this_week")}
+					subtitle={amount => <>{t("diary_week_subtitle", { amount: amount })}</>}
 					completedLessons={completedLessons.week}
 				/>
 
 				<section className="flex justify-end">
 					<button className="flex flex-col items-end gap-2 text-sm text-light">
-						<span className="font-medium">Vorherige Woche anzeigen</span>
+						<span className="font-medium">{t("show_last_week")}</span>
 						<ArrowRightCircleIcon className="h-6" />
 					</button>
 				</section>
@@ -132,6 +131,7 @@ export default function LearningDiary({ completedLessons, goals }: LearningDiary
 }
 
 function Goals({ initialValue }: { initialValue: string }) {
+	const { t } = useTranslation();
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const { mutate, isLoading: isSaving } = trpc.learningDiary.setGoals.useMutation({
 		onSettled(_data, error) {
@@ -139,14 +139,14 @@ function Goals({ initialValue }: { initialValue: string }) {
 				console.error(error);
 				showToast({
 					type: "error",
-					title: "Fehler",
-					subtitle: "Deine Ziele konnten nicht gespeichert werden."
+					title: t("error"),
+					subtitle: t("goals_not_saved_subtitle")
 				});
 			} else {
 				showToast({
 					type: "success",
-					title: "Gespeichert",
-					subtitle: "Deine Ziele wurden erfolgreich gespeichert."
+					title: t("saved"),
+					subtitle: t("goals_saved_subtitle")
 				});
 			}
 		}
@@ -156,13 +156,13 @@ function Goals({ initialValue }: { initialValue: string }) {
 		<section className="border-card flex flex-col gap-8 bg-white p-4">
 			<div className="flex h-full flex-col gap-4">
 				<div className="flex justify-between">
-					<span className="text-lg font-semibold text-light">Meine Ziele</span>
+					<span className="text-lg font-semibold text-light">{t("my_goals")}</span>
 					<button
 						className="btn-primary text-sm"
 						disabled={isSaving}
 						onClick={() => mutate({ goals: inputRef.current?.value ?? "" })}
 					>
-						Speichern
+						{t("save")}
 					</button>
 				</div>
 

@@ -1,5 +1,7 @@
 import { formatDistance } from "date-fns";
 import { de } from "date-fns/locale";
+import { enGB } from "date-fns/locale";
+import { i18n } from "./localization/i18n";
 
 /**
  * Formats seconds to "hh:mm:ss" (hh will be removed if less than an hour).
@@ -19,8 +21,13 @@ export function formatSeconds(seconds: number): string {
 }
 
 export function formatDateAgo(date: Date | string | number) {
+	const lang = i18n.language;
+	let locale = de;
+	if (lang == "en") {
+		locale = enGB;
+	}
 	return formatDistance(new Date(date), Date.now(), {
 		addSuffix: true,
-		locale: de
+		locale: locale
 	});
 }

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useQuestion } from "../../use-question-hook";
 import { evaluateProgramming } from "./evaluate";
 import { Programming } from "./schema";
+import { t } from "i18next";
 
 export type PistonFile = {
 	name: string;
@@ -191,7 +192,7 @@ export default function ProgrammingAnswer() {
 				</span>
 
 				<button className="btn-primary" onClick={runCode} disabled={output.isLoading}>
-					Ausführen
+					{t("run")}
 				</button>
 			</div>
 			<div className="flex flex-wrap gap-2">
@@ -216,7 +217,7 @@ export default function ProgrammingAnswer() {
 				{<TestCaseResult evaluation={evaluation} isExecuting={output.isLoading} />}
 
 				{output.isError && (
-					<LabeledField label="Ausgabe">
+					<LabeledField label={t("output")}>
 						<div className="flex h-fit max-h-[400px] w-full shrink-0 flex-col gap-4 rounded-lg border border-light-border bg-white">
 							<div className="playlist-scroll h-full overflow-auto p-4">
 								{output.text !== "" ? (
@@ -229,10 +230,10 @@ export default function ProgrammingAnswer() {
 									</pre>
 								) : (
 									<span className="flex flex-col gap-2 text-light">
-										<span>Keine Ausgabe.</span>
+										<span>{t("no_output")}.</span>
 										{output.signal && (
 											<span className="text-xs text-light text-red-500">
-												Prozess wurde mit "{output.signal}" beendet.
+												{t("process_finished_text", output.signal)}
 											</span>
 										)}
 									</span>
@@ -282,7 +283,7 @@ function TestCaseResult({
 				) : (
 					<CheckCircleIcon className="h-6 text-emerald-500" />
 				)}
-				<span>Testfälle:</span>
+				<span>{t("test_cases")}:</span>
 				<span>
 					{successCases.length} / {evaluation?.testCases.length ?? "?"}
 				</span>
@@ -291,12 +292,17 @@ function TestCaseResult({
 			{firstFailedTest && (
 				<>
 					<span className="font-semibold">
-						<p className="text-red-500">Test #{firstFailedTestIndex + 1}</p>
+						<p className="text-red-500">
+							{t("test")} #{firstFailedTestIndex + 1}
+						</p>
 					</span>
 
-					<ProgramOutput label="Eingabe" output={firstFailedTest.title} />
-					<ProgramOutput label="Erwartet" output={firstFailedTest.expected.join("\n")} />
-					<ProgramOutput label="Ausgabe" output={firstFailedTest.actual.join("\n")} />
+					<ProgramOutput label={t("input")} output={firstFailedTest.title} />
+					<ProgramOutput
+						label={t("expected")}
+						output={firstFailedTest.expected.join("\n")}
+					/>
+					<ProgramOutput label={t("output")} output={firstFailedTest.actual.join("\n")} />
 				</>
 			)}
 		</section>

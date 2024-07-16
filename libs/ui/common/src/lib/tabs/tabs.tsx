@@ -1,6 +1,6 @@
 import { Tab as HeadlessTab } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment, ReactNode } from "react";
+import { TransparentDeleteButton } from "../button/delete-button";
 
 export function Tabs({
 	children,
@@ -57,16 +57,13 @@ export function RemovableTab({
 }) {
 	return (
 		<Tab>
-			<span className="flex items-end gap-4">
+			<span className="flex items-end gap-4 hover:text-secondary">
 				<span>{children}</span>
-				<button
-					type="button"
+				<TransparentDeleteButton
+					onDelete={onRemove}
 					title="Entfernen"
-					onClick={onRemove}
-					className="rounded-full pb-[3px] hover:bg-red-50 hover:text-red-500"
-				>
-					<XMarkIcon className="h-4" />
-				</button>
+					additionalClassNames="flex items-center"
+				/>
 			</span>
 		</Tab>
 	);

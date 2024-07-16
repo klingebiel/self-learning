@@ -1,9 +1,11 @@
 import { TextArea } from "@self-learning/ui/forms";
 import { Feedback } from "../../feedback";
 import { useQuestion } from "../../use-question-hook";
+import { useTranslation } from "react-i18next";
 
 export default function TextAnswer() {
 	const { setAnswer, answer, evaluation } = useQuestion("text");
+	const { t } = useTranslation();
 
 	return (
 		<>
@@ -21,10 +23,7 @@ export default function TextAnswer() {
 			/>
 			{evaluation && (
 				<Feedback isCorrect={evaluation.isCorrect}>
-					<p className="text-sm">
-						Fragen vom Typ "Freitext" werden momentan nicht automatisch ausgewertet und
-						daher immer als korrekt gewertet.
-					</p>
+					<p className="text-sm">{t("free_text_info")}</p>
 				</Feedback>
 			)}
 		</>

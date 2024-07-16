@@ -4,6 +4,7 @@ import { Transition } from "@headlessui/react";
 import { trpc } from "@self-learning/api-client";
 import { useSession } from "next-auth/react";
 import { SearchSection } from "./search-section";
+import { useTranslation } from "react-i18next";
 
 function SearchInput({
 	searchQuery,
@@ -12,6 +13,7 @@ function SearchInput({
 	searchQuery: string;
 	setSearchQuery: (value: string) => void;
 }) {
+	const { t } = useTranslation();
 	return (
 		<div className="relative">
 			<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -22,7 +24,7 @@ function SearchInput({
 				id="search"
 				name="search"
 				className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-500 lg:text-sm lg:leading-6"
-				placeholder="Suchen..."
+				placeholder={t("search")}
 				type="search"
 				value={searchQuery}
 				onChange={e => {
@@ -34,12 +36,13 @@ function SearchInput({
 }
 
 function NoResults() {
+	const { t } = useTranslation();
 	return (
 		<div className="px-4 py-8 text-center text-sm sm:px-8">
 			<FaceFrownIcon className="mx-auto h-7 w-7 text-gray-400" />
-			<p className="mt-4 font-semibold text-gray-900">Nichts hier</p>
-			<p className="mt-2 text-gray-500">Leider konnten wir nichts finden was</p>
-			<p className="text-gray-500">deiner Suchanfrage entspricht</p>
+			<p className="mt-4 font-semibold text-gray-900">{t("nothing_here")}</p>
+			<p className="mt-2 text-gray-500">{t("search_bar_not_found_text_1")}</p>
+			<p className="text-gray-500">{t("search_bar_not_found_text_2")}</p>
 		</div>
 	);
 }
@@ -52,6 +55,7 @@ function SearchResults({
 	resetSearchQuery: () => void;
 }) {
 	const session = useSession();
+	const { t } = useTranslation();
 	const user = session.data?.user;
 	const search = { title: searchQuery, page: 1 };
 	const isUserAdmin = user?.role === "ADMIN";
@@ -74,7 +78,7 @@ function SearchResults({
 			{!hasResults && <NoResults />}
 			{courses && (
 				<SearchSection
-					title="Kurse"
+					title={t("courses")}
 					results={courses.result}
 					baseLink="courses"
 					onClick={resetSearchQuery}
@@ -82,7 +86,7 @@ function SearchResults({
 			)}
 			{lessons && isUserAdmin && (
 				<SearchSection
-					title="Lerneinheiten"
+					title={t("lessons")}
 					results={lessons.result}
 					baseLink="teaching/lessons/edit"
 					onClick={resetSearchQuery}
@@ -91,7 +95,7 @@ function SearchResults({
 
 			{authorResults && (
 				<SearchSection
-					title="Autoren"
+					title={t("authors")}
 					results={authorResults}
 					baseLink="authors"
 					onClick={resetSearchQuery}
@@ -102,6 +106,7 @@ function SearchResults({
 }
 
 export function SearchBar() {
+	const { t } = useTranslation();
 	const [searchQuery, setSearchQuery] = useState("");
 	const resetCallback = () => setSearchQuery("");
 
@@ -109,7 +114,7 @@ export function SearchBar() {
 		<div className="hidden flex-1 items-center justify-center px-2 lg:ml-6 lg:flex lg:justify-end">
 			<div className="relative w-full max-w-lg lg:max-w-xs">
 				<label htmlFor="search" className="sr-only">
-					Suche
+					{t("search")}
 				</label>
 				<SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 

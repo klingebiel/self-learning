@@ -4,6 +4,8 @@ import { getRandomId } from "@self-learning/util/common";
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { QuestionTypeForm } from "../../base-question";
 import { MultipleChoiceQuestion } from "./schema";
+import { AddButton, DeleteButton } from "@self-learning/ui/common";
+import { useTranslation } from "react-i18next";
 
 export default function MultipleChoiceForm({
 	index
@@ -11,6 +13,7 @@ export default function MultipleChoiceForm({
 	question: { type: MultipleChoiceQuestion["type"] };
 	index: number;
 }) {
+	const { t } = useTranslation();
 	const { control, register } = useFormContext<QuestionTypeForm<MultipleChoiceQuestion>>();
 	const { append, replace } = useFieldArray({
 		control,
@@ -32,7 +35,7 @@ export default function MultipleChoiceForm({
 	}
 
 	function removeAnswer(answerIndex: number) {
-		if (window.confirm("Antwort entfernen?")) {
+		if (window.confirm(t("confirm_delete_answer"))) {
 			replace(answers.filter((_, i) => i !== answerIndex));
 		}
 	}
@@ -40,16 +43,13 @@ export default function MultipleChoiceForm({
 	return (
 		<section className="flex flex-col gap-8">
 			<div className="flex items-center gap-4">
-				<h5 className="text-2xl font-semibold tracking-tight">Antworten</h5>
+				<h5 className="text-2xl font-semibold tracking-tight">{t("answers")}</h5>
 
-				<button
-					type="button"
-					className="btn-primary h-fit w-fit items-center"
-					onClick={addAnswer}
-				>
-					<PlusIcon className="h-5" />
-					<span>Antwort hinzufügen</span>
-				</button>
+				<AddButton
+					onAdd={addAnswer}
+					title={t("add_answer")}
+					label={<span>{t("add_answer")}</span>}
+				/>
 			</div>
 
 			{answers.map((answer, answerIndex) => (
@@ -70,15 +70,13 @@ export default function MultipleChoiceForm({
 									`quiz.questions.${index}.answers.${answerIndex}.isCorrect`
 								)}
 							/>
-							Diese Antwort ist korrekt.
+							{t("answer_is_correct")}
 						</label>
-						<button
-							type="button"
-							className="absolute top-2 right-2 text-xs text-red-500"
-							onClick={() => removeAnswer(answerIndex)}
-						>
-							Entfernen
-						</button>
+
+						<DeleteButton
+							onDelete={() => removeAnswer(answerIndex)}
+							title={t("delete_answer")}
+						/>
 					</div>
 
 					<Controller

@@ -14,8 +14,10 @@ import { AdminGuard, CenteredSection, useRequiredSession } from "@self-learning/
 import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { Fragment, useMemo, useState } from "react";
-
+import { useTranslation } from "react-i18next";
 export default function AuthorsPage() {
+	const { t } = useTranslation();
+
 	useRequiredSession();
 
 	const [displayName, setDisplayName] = useState("");
@@ -47,13 +49,13 @@ export default function AuthorsPage() {
 		if (username) {
 			try {
 				await promoteToAuthor({ username });
-				showToast({ type: "success", title: "Autor hinzugefügt", subtitle: username });
+				showToast({ type: "success", title: t("author_added"), subtitle: username });
 			} catch (error) {
 				if (error instanceof TRPCClientError) {
 					showToast({
 						type: "error",
-						title: "Fehler",
-						subtitle: "Autor konnte nicht hinzugefügt werden."
+						title: t("error"),
+						subtitle: t("add_author_error")
 					});
 				}
 			}
@@ -64,10 +66,10 @@ export default function AuthorsPage() {
 		<AdminGuard>
 			<CenteredSection>
 				<div className="mb-16 flex items-center justify-between gap-4">
-					<h1 className="text-5xl">Autoren</h1>
+					<h1 className="text-5xl">{t("authors")}</h1>
 					<button className="btn-primary" onClick={() => setCreateAuthorDialog(true)}>
 						<PlusIcon className="icon h-5" />
-						<span>Autor hinzufügen</span>
+						<span>{t("add_author")}</span>
 					</button>
 					{createAuthorDialog && (
 						<SearchUserDialog open={createAuthorDialog} onClose={onCreateAuthor} />
@@ -75,7 +77,7 @@ export default function AuthorsPage() {
 				</div>
 
 				<SearchField
-					placeholder="Suche nach Autor"
+					placeholder={t("search_for_author")}
 					onChange={e => setDisplayName(e.target.value)}
 				/>
 
@@ -90,7 +92,7 @@ export default function AuthorsPage() {
 						head={
 							<>
 								<TableHeaderColumn></TableHeaderColumn>
-								<TableHeaderColumn>Name</TableHeaderColumn>
+								<TableHeaderColumn>{t("name")}</TableHeaderColumn>
 								<TableHeaderColumn></TableHeaderColumn>
 							</>
 						}
@@ -131,7 +133,7 @@ export default function AuthorsPage() {
 													className="btn-stroked"
 													onClick={() => onEdit(name)}
 												>
-													Editieren
+													{t("edit")}
 												</button>
 											</div>
 										</TableDataColumn>

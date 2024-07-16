@@ -12,8 +12,10 @@ import { AdminGuard, CenteredSection, useRequiredSession } from "@self-learning/
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function CoursesPage() {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const { page = 1, title = "" } = router.query;
 	const [titleFilter, setTitle] = useState(title);
@@ -38,22 +40,25 @@ export default function CoursesPage() {
 	return (
 		<CenteredSection className="bg-gray-50">
 			<div className="mb-16 flex items-center justify-between gap-4">
-				<h1 className="text-5xl">Kurse</h1>
+				<h1 className="text-5xl">{t("course")}</h1>
 
 				<Link href="/teaching/courses/create" className="btn-primary flex w-fit">
 					<PlusIcon className="h-5" />
-					<span>Kurs hinzufügen</span>
+					<span>{t("add_course")}</span>
 				</Link>
 			</div>
 
-			<SearchField placeholder="Suche nach Titel" onChange={e => setTitle(e.target.value)} />
+			<SearchField
+				placeholder={t("search_for_title")}
+				onChange={e => setTitle(e.target.value)}
+			/>
 
 			<Table
 				head={
 					<>
 						<TableHeaderColumn></TableHeaderColumn>
-						<TableHeaderColumn>Titel</TableHeaderColumn>
-						<TableHeaderColumn>Von</TableHeaderColumn>
+						<TableHeaderColumn>{t("title")}</TableHeaderColumn>
+						<TableHeaderColumn>{t("by")}</TableHeaderColumn>
 					</>
 				}
 			>

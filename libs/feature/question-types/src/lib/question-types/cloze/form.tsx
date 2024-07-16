@@ -7,6 +7,7 @@ import { RenderGapType } from "./component";
 import { Cloze } from "./schema";
 import ReactMarkdown from "react-markdown";
 import { rehypePlugins, remarkPlugins } from "@self-learning/markdown";
+import { useTranslation } from "react-i18next";
 
 export default function ClozeForm({ index }: { question: { type: Cloze["type"] }; index: number }) {
 	const { control } = useFormContext<QuestionTypeForm<Cloze["question"]>>();
@@ -21,6 +22,7 @@ export default function ClozeForm({ index }: { question: { type: Cloze["type"] }
 	}, [clozeText]);
 
 	const [answer, _setAnswer] = useState<string[]>([]);
+	const { t } = useTranslation();
 
 	function setAnswer(index: number, value: string) {
 		_setAnswer(prev => {
@@ -33,7 +35,7 @@ export default function ClozeForm({ index }: { question: { type: Cloze["type"] }
 	return (
 		<div className="flex flex-col gap-8">
 			<div className="grid gap-8 xl:grid-cols-2">
-				<LabeledField label="Lückentext">
+				<LabeledField label={t("cloze")}>
 					<Controller
 						control={control}
 						name={`quiz.questions.${index}.clozeText`}
@@ -43,7 +45,7 @@ export default function ClozeForm({ index }: { question: { type: Cloze["type"] }
 					/>
 				</LabeledField>
 
-				<LabeledField label="Preview">
+				<LabeledField label={t("preview")}>
 					<pre className="prose h-full max-w-full whitespace-pre-line border border-light-border bg-white p-4 font-sans">
 						{cloze.segments.map((segment, index) => (
 							<Fragment key={index}>
@@ -77,22 +79,14 @@ export default function ClozeForm({ index }: { question: { type: Cloze["type"] }
 
 			<ul className="flex list-inside list-disc flex-col rounded-lg bg-gray-200 p-4">
 				<li className="flex flex-col gap-2">
-					<span className="font-semibold">Beispiele</span>
+					<span className="font-semibold">{t("examples")}</span>
 					<span className="rounded-lg bg-white p-2 font-mono">
-						Das ist eine {"{T: [Textantwort]}"}. Das ist ein Textfeld{" "}
-						{"{T: [Antwort, Lücke]}"} mit zwei richtigen Möglichkeiten.
+						{t("text_field_example")}
 					</span>
 					<span className="rounded-lg bg-white p-2 font-mono">
-						Das ist ein Single-Choice Feld mit {"{C: [#eins, zwei]}"}{" "}
-						Antwortmöglichkeiten, aus denen ausgewählt werden muss. Falsche Antworten
-						werden mit einem # gekennzeichnet.
+						{t("single_text_field_example")}
 					</span>
-					<span className="rounded-lg bg-white p-2 font-mono">
-						LaTeX kann verwendet werden, um mathematische Formeln und Symbole
-						darzustellen. Zum Beispiel: {"$$V_{sphere} = \\frac{4}{3}\\pi r^3$$"}. Es
-						kann auch in Single-Choice Feldern benutzt werden:{" "}
-						{"{C: [#eins, $$V_{sphere} = \\frac{4}{3}\\pi r^3$$]}"}{" "}
-					</span>
+					<span className="rounded-lg bg-white p-2 font-mono">{t("latex_example")}</span>
 				</li>
 			</ul>
 		</div>

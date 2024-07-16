@@ -9,6 +9,7 @@ import { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 type EditCourseProps = {
 	course: CourseFormModel;
@@ -113,6 +114,7 @@ export default function EditCoursePage({ course, lessons }: EditCourseProps) {
 	const router = useRouter();
 	const trpcContext = trpc.useContext();
 	const isInitialRender = useRef(true);
+	const { t } = useTranslation();
 
 	if (isInitialRender.current) {
 		isInitialRender.current = false;
@@ -131,12 +133,12 @@ export default function EditCoursePage({ course, lessons }: EditCourseProps) {
 					courseId: course.courseId as string,
 					course: updatedCourse
 				});
-				showToast({ type: "success", title: "Änderung gespeichert!", subtitle: title });
+				showToast({ type: "success", title: t("changed_success"), subtitle: title });
 				router.replace(router.asPath, undefined, { scroll: false });
 			} catch (error) {
 				showToast({
 					type: "error",
-					title: "Fehler",
+					title: t("error"),
 					subtitle: JSON.stringify(error, null, 2)
 				});
 			}

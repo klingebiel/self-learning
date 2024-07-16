@@ -4,10 +4,12 @@ import { LoadingBox } from "@self-learning/ui/common";
 import { useFormContext } from "react-hook-form";
 import { LessonFormModel } from "../lesson-form-model";
 import { Form } from "@self-learning/ui/forms";
+import { useTranslation } from "react-i18next";
 
 // Handles loading of licenses and makes them selectable afterwards
 export function LicenseForm() {
 	const { data: licenses, isLoading } = trpc.licenseRouter.getAll.useQuery();
+	const { t } = useTranslation();
 
 	if (isLoading) {
 		return <LoadingBox />;
@@ -15,8 +17,8 @@ export function LicenseForm() {
 		return (
 			<Form.SidebarSection>
 				<Form.SidebarSectionTitle
-					title="Lizenz"
-					subtitle="Die Lizenz unter der diese Lerneinheit vertrieben wird"
+					title={t("license")}
+					subtitle={t("lesson_license_text")}
 				/>
 				<OptionalLicenseSelector licenses={licenses} />
 			</Form.SidebarSection>

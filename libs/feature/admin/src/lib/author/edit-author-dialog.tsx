@@ -11,6 +11,7 @@ import {
 import { LabeledField, Upload } from "@self-learning/ui/forms";
 import { OpenAsJsonButton } from "libs/feature/teaching/src/lib/json-editor-dialog";
 import { FormProvider, useForm, useFormContext, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export function EditAuthorDialog({
 	username,
@@ -61,6 +62,7 @@ function AuthorForm({
 	username: string;
 	onClose: OnDialogCloseFn<Author>;
 }) {
+	const { t } = useTranslation();
 	const { mutateAsync: updateAuthor } = trpc.author.updateAsAdmin.useMutation();
 	const form = useForm({
 		resolver: zodResolver(authorSchema),
@@ -74,7 +76,7 @@ function AuthorForm({
 			.then(res => {
 				showToast({
 					type: "success",
-					title: "Autor gespeichert!",
+					title: t("author_saved"),
 					subtitle: res.displayName
 				});
 				onClose(undefined);
@@ -83,15 +85,18 @@ function AuthorForm({
 				console.error(err);
 				showToast({
 					type: "error",
-					title: "Fehler",
-					subtitle: "Autor konnte nicht gespeichert werden."
+					title: t("error"),
+					subtitle: t("author_save_error")
 				});
 			});
 	}
 
 	return (
 		<FormProvider {...form}>
-			<form className="flex flex-col justify-between overflow-hidden" onSubmit={form.handleSubmit(onSubmit)}>
+			<form
+				className="flex flex-col justify-between overflow-hidden"
+				onSubmit={form.handleSubmit(onSubmit)}
+			>
 				<div className="absolute top-8 right-8">
 					<OpenAsJsonButton form={form} validationSchema={authorSchema} />
 				</div>
@@ -104,7 +109,7 @@ function AuthorForm({
 				<div className="absolute bottom-10 right-10 xl:right-14">
 					<DialogActions onClose={onClose}>
 						<button className="btn-primary" type="submit">
-							Speichern
+							{t("save")}
 						</button>
 					</DialogActions>
 				</div>
@@ -114,21 +119,22 @@ function AuthorForm({
 }
 
 function AuthorData() {
+	const { t } = useTranslation();
 	const { register, control, setValue, formState } = useFormContext<Author>();
 	const imgUrl = useWatch({ control: control, name: "imgUrl" });
 	const errors = formState.errors;
 
 	return (
 		<section className="flex flex-col rounded-lg border border-light-border p-4">
-			<h2 className="mb-4 text-2xl">Daten</h2>
+			<h2 className="mb-4 text-2xl">{t("data")}</h2>
 			<div className="flex flex-col gap-4">
-				<LabeledField label="Name" error={errors.displayName?.message}>
+				<LabeledField label={t("name")} error={errors.displayName?.message}>
 					<input className="textfield" type={"text"} {...register("displayName")} />
 				</LabeledField>
 				<LabeledField label="Slug" error={errors.slug?.message}>
 					<input className="textfield" type={"text"} {...register("slug")} />
 				</LabeledField>
-				<LabeledField label="Bild" error={errors.imgUrl?.message}>
+				<LabeledField label={t("image")} error={errors.imgUrl?.message}>
 					<div className="flex w-full gap-4">
 						<div className="flex w-full flex-col gap-2">
 							<input
@@ -163,6 +169,7 @@ function AuthorData() {
 }
 
 function Permissions() {
+	const { t } = useTranslation();
 	const { data: subjects } = trpc.subject.getAllWithSpecializations.useQuery();
 	const { control, setValue } = useFormContext<Author>();
 	const subjectAdmin = useWatch({ control: control, name: "subjectAdmin" });
@@ -171,7 +178,7 @@ function Permissions() {
 	return (
 		<section className="flex flex-col gap-8">
 			<section className="flex h-full flex-col gap-4 rounded-lg border border-light-border p-4">
-				<h2 className="text-2xl">Rechte</h2>
+				<h2 className="text-2xl">{t("permissions")}</h2>
 				<p className="text-sm text-light">TODO: Beschreibung der Rechte</p>
 				<div className="flex gap-4">
 					{!subjects ? (

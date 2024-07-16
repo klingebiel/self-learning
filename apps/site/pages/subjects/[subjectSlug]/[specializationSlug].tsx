@@ -6,6 +6,7 @@ import { ItemCardGrid, TopicHeader } from "@self-learning/ui/layouts";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { ReactComponent as VoidSvg } from "../../../svg/void.svg";
+import { useTranslation } from "react-i18next";
 
 type SpecializationPageProps = {
 	specialization: ResolvedValue<typeof getSpecialization>;
@@ -60,6 +61,7 @@ async function getSpecialization(specializationSlug: string) {
 
 export default function SpecializationPage({ specialization }: SpecializationPageProps) {
 	const { title, subtitle, imgUrlBanner, subject, courses } = specialization;
+	const { t } = useTranslation();
 
 	return (
 		<div className="bg-gray-50 pb-32">
@@ -79,9 +81,7 @@ export default function SpecializationPage({ specialization }: SpecializationPag
 					</ItemCardGrid>
 				) : (
 					<div className="grid gap-16 pt-16">
-						<span className="mx-auto font-semibold">
-							Leider gibt es hier noch keine Inhalte.
-						</span>
+						<span className="mx-auto font-semibold">{t("no_content_text")}</span>
 						<div className="mx-auto w-full max-w-md ">
 							<VoidSvg />
 						</div>
@@ -98,6 +98,7 @@ function CourseCard({
 	course: SpecializationPageProps["specialization"]["courses"][0];
 }) {
 	const meta = course.meta as CourseMeta;
+	const { t } = useTranslation();
 
 	return (
 		<Link href={`/courses/${course.slug}`} className="flex">
@@ -106,13 +107,12 @@ function CourseCard({
 				imgUrl={course.imgUrl}
 				title={course.title}
 				subtitle={course.subtitle}
-				badge={<ImageCardBadge text="Lernkurs" className="bg-emerald-500" />}
+				badge={<ImageCardBadge text={t("course")} className="bg-emerald-500" />}
 				footer={
 					<span className="flex items-center gap-3 text-sm font-semibold text-emerald-500">
 						<PuzzlePieceIcon className="h-5" />
 						<span>
-							{meta.lessonCount}{" "}
-							{meta.lessonCount === 1 ? "Lerneinheit" : "Lerneinheiten"}
+							{meta.lessonCount} {meta.lessonCount === 1 ? t("unit") : t("units")}
 						</span>
 					</span>
 				}

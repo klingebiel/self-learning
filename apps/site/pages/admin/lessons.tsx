@@ -7,8 +7,10 @@ import { formatDateAgo } from "@self-learning/util/common";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function LessonManagementPage() {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const { page = 1, title = "" } = router.query;
 	const [titleFilter, setTitle] = useState(title);
@@ -33,16 +35,16 @@ export default function LessonManagementPage() {
 	return (
 		<CenteredSection className="bg-gray-50">
 			<div className="mb-16 flex items-center justify-between gap-4 ">
-				<h1 className="text-5xl">Lerneinheiten</h1>
+				<h1 className="text-5xl">{t("lesson")}</h1>
 
 				<Link href="/teaching/lessons/create" className="btn-primary flex w-fit">
 					<PlusIcon className="icon h-5" />
-					<span>Lerneinheit hinzufügen</span>
+					<span>{t("add_lesson")}</span>
 				</Link>
 			</div>
 
 			<SearchField
-				placeholder="Suche nach Titel"
+				placeholder={t("search_for_title")}
 				value={titleFilter}
 				onChange={e => {
 					setTitle(e.target.value);
@@ -59,9 +61,9 @@ export default function LessonManagementPage() {
 			<Table
 				head={
 					<>
-						<TableHeaderColumn>Titel</TableHeaderColumn>
-						<TableHeaderColumn>Von</TableHeaderColumn>
-						<TableHeaderColumn>Letzte Änderung</TableHeaderColumn>
+						<TableHeaderColumn>{t("title")}</TableHeaderColumn>
+						<TableHeaderColumn>{t("by")}</TableHeaderColumn>
+						<TableHeaderColumn>{t("last_change")}</TableHeaderColumn>
 					</>
 				}
 			>

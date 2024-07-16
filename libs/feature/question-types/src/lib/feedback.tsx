@@ -1,6 +1,7 @@
 import { useQuiz } from "@self-learning/quiz";
 import { motion } from "framer-motion";
 import { useQuestion } from "./use-question-hook";
+import { useTranslation } from "react-i18next";
 
 /**
  * Component that displays feedback to a user after answering a question.
@@ -33,6 +34,7 @@ export function Feedback({
 }) {
 	const { config } = useQuiz();
 	const { evaluation } = useQuestion("text"); // question type is irrelevant here
+	const { t } = useTranslation();
 
 	return (
 		<motion.div
@@ -46,10 +48,10 @@ export function Feedback({
 			}`}
 		>
 			{isCorrect ? (
-				<span className="font-medium">Deine Antwort ist richtig!</span>
+				<span className="font-medium">{t("answer_is_correct")}</span>
 			) : (
 				<div className="flex flex-col gap-2">
-					<span className="font-medium">Deine Antwort ist leider nicht korrekt.</span>
+					<span className="font-medium">{t("answer_is_not_correct")}.</span>
 				</div>
 			)}
 			{evaluation && !evaluation.isCorrect && config.showSolution && children}

@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { ComponentProps, useState } from "react";
 import { ReactComponent as VoidSvg } from "../../svg/void.svg";
 import { SkillRepositoryOverview } from "@self-learning/teaching";
+import { useTranslation } from "react-i18next";
 
 const EditAuthorDialog = dynamic(
 	() => import("@self-learning/teaching").then(m => m.EditAuthorDialog),
@@ -96,6 +97,7 @@ export default function AuthorOverview({ author }: Props) {
 	const [openEditDialog, setOpenEditDialog] = useState(false);
 	const { mutateAsync: updateAuthor } = trpc.author.updateSelf.useMutation();
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	const onEditDialogClose: ComponentProps<
 		typeof EditAuthorDialog
@@ -107,15 +109,15 @@ export default function AuthorOverview({ author }: Props) {
 				await updateAuthor(editedAuthor);
 				showToast({
 					type: "success",
-					title: "Informationen aktualisiert",
-					subtitle: "Bitte führe einen erneuten Login durch."
+					title: t("infos_updated"),
+					subtitle: t("re-login_ask")
 				});
 				router.replace(router.asPath);
 			} catch (error) {
 				console.error(error);
 
 				if (error instanceof TRPCClientError) {
-					showToast({ type: "error", title: "Fehler", subtitle: error.message });
+					showToast({ type: "error", title: t("error"), subtitle: error.message });
 				}
 			}
 		}
@@ -140,7 +142,7 @@ export default function AuthorOverview({ author }: Props) {
 							</Link>
 							<button
 								className="h-fit w-fit rounded-full p-2 hover:bg-gray-200"
-								title="Bearbeiten"
+								title={t("edit")}
 								onClick={() => setOpenEditDialog(true)}
 							>
 								<CogIcon className="h-5 justify-self-start text-gray-400" />
@@ -159,8 +161,8 @@ export default function AuthorOverview({ author }: Props) {
 
 						<section>
 							<SectionHeader
-								title="Fachgebiete"
-								subtitle="Administrator in den folgenden Fachgebieten:"
+								title={t("subjects")}
+								subtitle={t("admin_in_subjects")}
 							/>
 
 							<ul className="flex flex-wrap gap-4">
@@ -184,8 +186,8 @@ export default function AuthorOverview({ author }: Props) {
 						<Divider />
 						<section>
 							<SectionHeader
-								title="Spezialisierungen"
-								subtitle="Administrator in den folgenden Spezialisierungen:"
+								title={t("specializations")}
+								subtitle={t("admin_in_specializations")}
 							/>
 
 							<ul className="flex flex-wrap gap-4">
@@ -211,14 +213,11 @@ export default function AuthorOverview({ author }: Props) {
 
 				<section>
 					<div className="flex justify-between gap-4">
-						<SectionHeader
-							title="Meine Kurse"
-							subtitle="Autor in den folgenden Kursen:"
-						/>
+						<SectionHeader title={t("my_courses")} subtitle={t("author_in_courses")} />
 
 						<Link href="/teaching/courses/create" className="btn-primary h-fit w-fit">
 							<PlusIcon className="icon" />
-							<span>Neuen Kurs erstellen</span>
+							<span>{t("create_course")}</span>
 						</Link>
 					</div>
 
@@ -228,7 +227,7 @@ export default function AuthorOverview({ author }: Props) {
 								<div className="h-32 w-32">
 									<VoidSvg />
 								</div>
-								<p className="text-light">Du hast noch keine Kurse erstellt.</p>
+								<p className="text-light">{t("no_course_created")}</p>
 							</div>
 						) : (
 							author.courses.map(course => (
@@ -261,7 +260,7 @@ export default function AuthorOverview({ author }: Props) {
 											className="btn-stroked h-fit w-fit"
 										>
 											<PencilIcon className="icon" />
-											<span>Bearbeiten</span>
+											<span>{t("edit")}</span>
 										</Link>
 									</div>
 								</li>
@@ -275,13 +274,13 @@ export default function AuthorOverview({ author }: Props) {
 				<section>
 					<div className="flex justify-between gap-4">
 						<SectionHeader
-							title="Meine Lerneinheiten"
-							subtitle="Autor der folgenden Lerneinheiten:"
+							title={t("my_learning_units")}
+							subtitle={t("author_in_units")}
 						/>
 
 						<Link href="/teaching/lessons/create" className="btn-primary h-fit w-fit">
 							<PlusIcon className="icon" />
-							<span>Neuen Lerneinheit erstellen</span>
+							<span>{t("create_unit")}</span>
 						</Link>
 					</div>
 
@@ -291,13 +290,10 @@ export default function AuthorOverview({ author }: Props) {
 				<Divider />
 				<section>
 					<div className="flex justify-between gap-4">
-						<SectionHeader
-							title="Skillkarten"
-							subtitle="Besitzer der folgenden Repositories"
-						/>
+						<SectionHeader title={t("skillcard")} subtitle={t("repo_owner")} />
 						<Link href="skills/repository/create" className="btn-primary h-fit w-fit">
 							<PlusIcon className="icon h-5" />
-							<span>Skillkarten anlegen</span>
+							<span>{t("creating_skillcard")}</span>
 						</Link>
 					</div>
 					<SkillRepositoryOverview />
@@ -309,6 +305,7 @@ export default function AuthorOverview({ author }: Props) {
 
 function Lessons({ authorName }: { authorName: string }) {
 	const router = useRouter();
+	const { t } = useTranslation();
 	const { title = "", page = 1 } = router.query;
 
 	const { data: lessons } = trpc.lesson.findMany.useQuery(
@@ -330,7 +327,7 @@ function Lessons({ authorName }: { authorName: string }) {
 			) : (
 				<>
 					<SearchField
-						placeholder="Suche nach Lerneinheit"
+						placeholder={t("search_for_unit")}
 						value={title}
 						onChange={e => {
 							router.push(
@@ -349,8 +346,8 @@ function Lessons({ authorName }: { authorName: string }) {
 					<Table
 						head={
 							<>
-								<TableHeaderColumn>Titel</TableHeaderColumn>
-								<TableHeaderColumn>Letzte Änderung</TableHeaderColumn>
+								<TableHeaderColumn>{t("title")}</TableHeaderColumn>
+								<TableHeaderColumn>{t("last_change")}</TableHeaderColumn>
 							</>
 						}
 					>

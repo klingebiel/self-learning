@@ -3,8 +3,10 @@ import { SubjectEditor } from "@self-learning/teaching";
 import { Subject, subjectSchema } from "@self-learning/types";
 import { LoadingBox, showToast } from "@self-learning/ui/common";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 export default function SubjectEditPage() {
+	const { t } = useTranslation();
 	const { subjectId } = useRouter().query;
 	const { data: subject } = trpc.subject.getForEdit.useQuery(
 		{
@@ -22,8 +24,8 @@ export default function SubjectEditPage() {
 			const res = await updateSubject(subjectFromForm);
 			showToast({
 				type: "success",
-				title: "Fachgebiet aktualisiert",
-				subtitle: `Das Fachgebiet "${res.title}" wurde aktualisiert.`
+				title: t("subject_updated"),
+				subtitle: t("subject_update_subtitle", { title: res.title })
 			});
 		} catch (error) {
 			console.error("Error updating subject", error);

@@ -21,6 +21,8 @@ import { trpc } from "@self-learning/api-client";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 type Student = Awaited<ReturnType<typeof getStudent>>;
 
@@ -84,6 +86,7 @@ export function getStudent(username: string) {
 }
 
 export default function StudentOverview({ student }: Props) {
+	const { t } = useTranslation();
 	const [editStudentDialog, setEditStudentDialog] = useState(false);
 	const { mutateAsync: updateStudent } = trpc.me.updateStudent.useMutation();
 	const router = useRouter();
@@ -98,7 +101,7 @@ export default function StudentOverview({ student }: Props) {
 				await updateStudent(updated);
 				showToast({
 					type: "success",
-					title: "Informationen aktualisiert",
+					title: t("information_updated"),
 					subtitle: updated.user.displayName
 				});
 				router.replace(router.asPath);
@@ -106,7 +109,7 @@ export default function StudentOverview({ student }: Props) {
 				console.error(error);
 
 				if (error instanceof TRPCClientError) {
-					showToast({ type: "error", title: "Fehler", subtitle: error.message });
+					showToast({ type: "error", title: t("error"), subtitle: error.message });
 				}
 			}
 		}
@@ -123,20 +126,18 @@ export default function StudentOverview({ student }: Props) {
 					<div className="flex flex-col gap-4 pl-8 pr-4">
 						<h1 className="text-6xl">{student.user.displayName}</h1>
 						<span>
-							Du hast bereits{" "}
+							{t("lessons_finished_text_1")}{" "}
 							<span className="mx-1 font-semibold text-secondary">
 								{student._count.completedLessons}
 							</span>{" "}
-							{student._count.completedLessons === 1
-								? "Lerneinheit"
-								: "Lerneinheiten"}{" "}
-							abgeschlossen.
+							{student._count.completedLessons === 1 ? t("lesson") : t("lessons")}{" "}
+							{t("lessons_finished_text_2")}
 						</span>
 					</div>
 
 					<button
 						className="self-start rounded-full p-2 hover:bg-gray-100"
-						title="Bearbeiten"
+						title={t("edit")}
 						onClick={() => setEditStudentDialog(true)}
 					>
 						<CogIcon className="h-5 text-gray-400" />
@@ -153,14 +154,14 @@ export default function StudentOverview({ student }: Props) {
 				<Divider />
 
 				<section>
-					<SectionHeader title="Kürzlich abgeschlossene Lerneinheiten" />
+					<SectionHeader title={t("recently_finished_lessons")} />
 					<Activity completedLessons={student.completedLessons} />
 				</section>
 
 				<Divider />
 
 				<section>
-					<SectionHeader title="Meine Kurse" />
+					<SectionHeader title={t("my_courses")} />
 					<Enrollments enrollments={student.enrollments} />
 				</section>
 			</div>
@@ -211,9 +212,7 @@ function Activity({ completedLessons }: { completedLessons: Student["completedLe
 					))}
 				</ul>
 			) : (
-				<span className="text-sm text-light">
-					Du hast bisher noch keine Lerneinheit abgeschlossen.
-				</span>
+				<span className="text-sm text-light">{t("no_lesson_finished_text")}</span>
 			)}
 		</>
 	);
@@ -223,9 +222,7 @@ function Enrollments({ enrollments }: { enrollments: Student["enrollments"] }) {
 	return (
 		<>
 			{enrollments.length === 0 ? (
-				<span className="text-sm text-light">
-					Du bist momentan in keinem Kurs eingeschrieben.
-				</span>
+				<span className="text-sm text-light">{t("no_enrolled_courses")}</span>
 			) : (
 				<ItemCardGrid>
 					{enrollments.map(enrollment => (
@@ -242,7 +239,7 @@ function Enrollments({ enrollments }: { enrollments: Student["enrollments"] }) {
 									enrollment.status === "COMPLETED" ? (
 										<ImageCardBadge
 											className="bg-emerald-500 text-white"
-											text="Abgeschlossen"
+											text={t("finished")}
 										/>
 									) : (
 										<></>
@@ -289,6 +286,7 @@ function EditStudentDialog({
 	student: EditStudent;
 	onClose: OnDialogCloseFn<EditStudent>;
 }) {
+	const { t } = useTranslation();
 	const form = useForm({
 		defaultValues: student,
 		resolver: zodResolver(editStudentSchema)
@@ -297,7 +295,10 @@ function EditStudentDialog({
 	return (
 		<Dialog title={student.user.displayName} onClose={onClose}>
 			<form onSubmit={form.handleSubmit(onClose)}>
-				<LabeledField label="Name" error={form.formState.errors.user?.displayName?.message}>
+				<LabeledField
+					label={t("name")}
+					error={form.formState.errors.user?.displayName?.message}
+				>
 					<input
 						{...form.register("user.displayName")}
 						type="text"
@@ -307,7 +308,7 @@ function EditStudentDialog({
 
 				<DialogActions onClose={onClose}>
 					<button className="btn-primary" disabled={!form.formState.isValid}>
-						Speichern
+						{t("save")}
 					</button>
 				</DialogActions>
 			</form>

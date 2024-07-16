@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 import { ReactComponent as StudyingSvg } from "../svg/studying.svg";
 
 export function LandingPage() {
+	const { t } = useTranslation();
 	return (
 		<div className="flex h-full flex-col gap-16 px-4">
 			<div className="relative z-10 mx-auto grid max-w-screen-2xl items-start gap-8 py-8 lg:py-32 xl:grid-cols-2">
@@ -16,7 +18,7 @@ export function LandingPage() {
 
 					<span className="mt-8 flex flex-col text-slate-600 md:text-xl">
 						<p className="mb-12 text-xl">
-							Willkommen auf der Selbstlernplattform der{" "}
+							{t("welcome_message")}{" "}
 							<a
 								href={"https://www.uni-hildesheim.de/"}
 								target="_blank"
@@ -41,27 +43,14 @@ export function LandingPage() {
 							href="/subjects"
 							className="w-fit rounded-lg bg-secondary px-16 py-6 text-center text-lg font-semibold text-white"
 						>
-							Lerninhalte entdecken
+							{t("navigate_learning_content")}
 						</Link>
 
 						<ul className="text-md mt-12 flex list-inside list-disc flex-col gap-6">
-							<li>
-								Auf der Plattform werden dir studiengangbezogene Lerninhalte in
-								individualisierten und flexiblen Lernpfaden, bestehend aus kleinen
-								Lerneinheiten, präsentiert.
-							</li>
-							<li>Diese kannst du in deinem eigenen Tempo lernen und wiederholen.</li>
-
-							<li>
-								Während du einen Lernpfad durchläufst, erhältst du Feedback zu
-								deinem Lernfortschritt und Hinweise, wie du Lernstrategien anwenden
-								kannst, um dein Lernen zu verbessern.
-							</li>
-
-							<li>
-								Unsere Mission ist, dass du durch die Plattform lernst, strategisch
-								und nachhaltig zu lernen.
-							</li>
+							<li>{t("welcome_info_text_1")}</li>
+							<li>{t("welcome_info_text_2")}</li>
+							<li>{t("welcome_info_text_3")}</li>
+							<li>{t("welcome_info_text_4")}</li>
 						</ul>
 					</span>
 				</div>

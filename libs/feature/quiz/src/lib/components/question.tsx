@@ -17,6 +17,8 @@ import { LessonLayoutProps } from "@self-learning/lesson";
 import { LessonType } from "@prisma/client";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
+import i18next from "i18next";
+import { useTranslation } from "react-i18next";
 
 export type QuizSavedAnswers = { answers: unknown; lessonSlug: string };
 
@@ -101,7 +103,7 @@ export function Question({
 				<div>
 					<div className="flex items-center justify-between">
 						<span className="font-semibold text-secondary" data-testid="questionType">
-							{QUESTION_TYPE_DISPLAY_NAMES[question.type]}
+							{QUESTION_TYPE_DISPLAY_NAMES()[question.type]}
 						</span>
 						<div className="flex gap-4">
 							<button
@@ -152,6 +154,7 @@ function CheckResult({
 	isLastQuestionStep: boolean;
 }) {
 	// We only use "multiple-choice" to get better types ... works for all question types
+	const { t } = useTranslation();
 	const { question, answer, evaluation: currentEvaluation } = useQuestion("multiple-choice");
 	const { completionState, reload } = useQuiz();
 
@@ -172,13 +175,13 @@ function CheckResult({
 			className="btn-primary"
 			onClick={canGoToNextQuestion ? nextQuestionStep : checkResult}
 		>
-			{canGoToNextQuestion ? "Nächste Frage" : "Überprüfen"}
+			{canGoToNextQuestion ? t("next_question") : t("check")}
 		</button>
 	);
 
 	const renderFailedButton = () => (
 		<button className="btn bg-red-500" onClick={reload}>
-			<span>Erneut probieren</span>
+			<span>{i18next.t("try_again")}</span>
 			<ArrowPathIcon className="h-5" />
 		</button>
 	);

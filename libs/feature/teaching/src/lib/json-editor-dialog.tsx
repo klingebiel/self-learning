@@ -1,8 +1,11 @@
 import { Dialog } from "@headlessui/react";
 import { EditorField } from "@self-learning/ui/forms";
-import { useId, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useFormContext, UseFormReturn } from "react-hook-form";
 import { ZodSchema } from "zod";
+import { DefaultButton } from "@self-learning/ui/common";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 export function JsonEditorDialog<T>({
 	onClose,
@@ -37,7 +40,7 @@ export function JsonEditorDialog<T>({
 	return (
 		<Dialog
 			open={true}
-			onClose={() => window.confirm("Änderungen verwerfen?") && onClose(undefined)}
+			onClose={() => window.confirm(t("continue_without_changes")) && onClose(undefined)}
 			className="relative z-50"
 		>
 			{/* The backdrop, rendered as a fixed sibling to the panel container */}
@@ -49,7 +52,7 @@ export function JsonEditorDialog<T>({
 				<div className="flex min-h-full items-center justify-center">
 					{/* The actual dialog panel  */}
 					<Dialog.Panel className="mx-auto w-[50vw] rounded bg-white px-8 pb-8">
-						<Dialog.Title className="py-8 text-xl">Als JSON bearbeiten</Dialog.Title>
+						<Dialog.Title className="py-8 text-xl">{t("edit_as_json")}</Dialog.Title>
 
 						{error && (
 							<div className="mb-8 max-h-32 overflow-auto">
@@ -72,7 +75,7 @@ export function JsonEditorDialog<T>({
 								className="btn-primary  w-fit"
 								onClick={closeWithReturn}
 							>
-								Übernehmen
+								{t("save")}
 							</button>
 
 							<button
@@ -80,7 +83,7 @@ export function JsonEditorDialog<T>({
 								className="btn-stroked w-fit"
 								onClick={() => onClose(undefined)}
 							>
-								Abbrechen
+								{t("cancel")}
 							</button>
 						</div>
 					</Dialog.Panel>
@@ -127,15 +130,15 @@ export function OpenAsJsonButton({
 	form: UseFormReturn<any>;
 	validationSchema?: ZodSchema;
 }) {
-	const id = useId();
+	const { t } = useTranslation();
 	const { isJsonEditorOpen, openJsonEditor, onCloseJsonEditor } = useJsonEditor(form);
 
 	return (
-		<button key={id} type="button" className="btn-stroked" onClick={openJsonEditor}>
-			<span>Als JSON bearbeiten</span>
+		<DefaultButton onClick={openJsonEditor}>
+			<span className={"text-gray-600"}>{t("edit_as_json")}</span>
 			{isJsonEditorOpen && (
 				<JsonEditorDialog onClose={onCloseJsonEditor} validationSchema={validationSchema} />
 			)}
-		</button>
+		</DefaultButton>
 	);
 }

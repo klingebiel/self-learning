@@ -19,6 +19,7 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type QuestionProps = LessonLayoutProps & {
 	quiz: Quiz;
@@ -257,6 +258,7 @@ function QuestionTab(props: {
 }) {
 	const isCorrect = props.evaluation?.isCorrect === true;
 	const isIncorrect = props.evaluation?.isCorrect === false;
+	const { t } = useTranslation();
 
 	{
 		props.isMultiStep && <CheckCircleIcon className="h-5 text-secondary" />;
@@ -277,7 +279,10 @@ function QuestionTab(props: {
 					<CheckCircleIconOutline className="h-5 text-gray-400" />
 				</QuestionTabIcon>
 			)}
-			<span data-testid="questionTab">Frage {props.index + 1}</span>
+			{t("task")}
+			<span data-testid="questionTab">
+				{t("question")} {props.index + 1}
+			</span>
 		</span>
 	);
 }
@@ -310,27 +315,28 @@ function QuizCompletionDialog({
 	nextLesson: { title: string; slug: string } | null;
 	onClose: OnDialogCloseFn<void>;
 }) {
+	const { t } = useTranslation();
 	return (
 		<Dialog onClose={onClose} title="Geschafft!" style={{ maxWidth: "600px" }}>
 			<div className="flex flex-col text-sm text-light">
 				<p>
-					Du hast die Lerneinheit{" "}
-					<span className="font-semibold text-secondary">{lesson.title}</span> erfolgreich
-					abgeschlossen.
+					{t("finished_learning_unit_1")}{" "}
+					<span className="font-semibold text-secondary">{lesson.title}</span>
+					{t("finished_learning_unit_2")}
 				</p>
 
 				{nextLesson ? (
 					<div className="flex flex-col">
-						<p>Die nächste Lerneinheit ist ...</p>
+						<p>{t("next_learning_unit")}</p>
 						<span className="mt-4 self-center rounded-lg bg-gray-100 px-12 py-4 text-xl font-semibold tracking-tighter text-secondary">
 							{nextLesson.title}
 						</span>
 					</div>
 				) : (
 					<p>
-						Der Kurs{" "}
-						<span className="font-semibold text-secondary">{course.title}</span> enthält
-						keine weiteren Lerneinheiten für dich.
+						{t("no_learning_units_1")}{" "}
+						<span className="font-semibold text-secondary">{course.title}</span>
+						{t("no_learning_units_2")}
 					</p>
 				)}
 			</div>
@@ -341,7 +347,7 @@ function QuizCompletionDialog({
 						href={`/courses/${course.slug}/${nextLesson.slug}`}
 						className="btn-primary"
 					>
-						<span>Zur nächsten Lerneinheit</span>
+						<span>{t("to_next_learning_unit")}</span>
 						<PlayIcon className="h-5 shrink-0" />
 					</Link>
 				)}
@@ -358,20 +364,21 @@ function QuizFailedDialog({
 	onClose: OnDialogCloseFn<void>;
 }) {
 	const { reload } = useQuiz();
+	const { t } = useTranslation();
 
 	return (
-		<Dialog onClose={onClose} title="Nicht Bestanden" style={{ maxWidth: "600px" }}>
+		<Dialog onClose={onClose} title={t("quiz_failed")} style={{ maxWidth: "600px" }}>
 			<div className="flex flex-col text-sm text-light">
 				<p>
-					Du hast leider zu viele Fragen falsch beantwortet, um die Lerneinheit{" "}
+					{t("quiz_failed_text_1")}{" "}
 					<span className="font-semibold text-secondary">{lesson.title}</span>{" "}
-					abzuschließen.
+					{t("quiz_failed_text_2")}
 				</p>
 			</div>
 
 			<DialogActions onClose={onClose}>
 				<button className="btn-primary" onClick={reload}>
-					<span>Erneut probieren</span>
+					<span>{t("try_again")}</span>
 					<ArrowPathIcon className="h-5 shrink-0" />
 				</button>
 			</DialogActions>

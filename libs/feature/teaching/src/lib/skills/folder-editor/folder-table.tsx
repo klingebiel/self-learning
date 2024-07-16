@@ -7,6 +7,7 @@ import { ListSkillEntryWithChildren } from "./skill-row-entry";
 import { NewSkillButton } from "./skill-taskbar";
 import { SkillFolderVisualization, SkillSelectHandler, UpdateVisuals } from "./skill-display";
 import { Skill } from "@prisma/client";
+import { useTranslation } from "react-i18next";
 
 export function SkillFolderTable({
 	repository,
@@ -35,6 +36,7 @@ export function SkillFolderTable({
 
 	const setShortHighlight = (skill: Skill) =>
 		updateSkillDisplay([{ id: skill.id, shortHighlight: true }]);
+	const { t } = useTranslation();
 
 	return (
 		<div>
@@ -45,7 +47,7 @@ export function SkillFolderTable({
 				</div>
 
 				<SearchField
-					placeholder="Suche nach Skill-Trees"
+					placeholder={t("skill_tree_search")}
 					onChange={e => {
 						setSearchTerm(e.target.value);
 					}}
@@ -68,8 +70,8 @@ export function SkillFolderTable({
 									checked={false}
 								/>
 							</th>
-							<TableHeaderColumn>Bezeichnung</TableHeaderColumn>
-							<TableHeaderColumn>Fremd-Skill</TableHeaderColumn>
+							<TableHeaderColumn>{t("designation")}</TableHeaderColumn>
+							<TableHeaderColumn>{t("foreign_skill")}</TableHeaderColumn>
 						</>
 					}
 				>
@@ -103,6 +105,7 @@ const isTopLevelSkill = (skill: SkillFolderVisualization) => {
 };
 
 function RepositoryInfo({ repository }: { repository: SkillRepository }) {
+	const { t } = useTranslation();
 	const [showFullDescription, setShowFullDescription] = useState(false);
 
 	const descLength = repository.description?.length ?? 0;
@@ -122,7 +125,7 @@ function RepositoryInfo({ repository }: { repository: SkillRepository }) {
 						onClick={() => setShowFullDescription(true)}
 						className="pl-4 text-blue-500"
 					>
-						Mehr anzeigen
+						{t("show_more")}
 					</button>
 				)}
 			</div>

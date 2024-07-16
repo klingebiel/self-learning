@@ -21,6 +21,7 @@ import * as ToC from "@self-learning/ui/course";
 import { CenteredContainer, CenteredSection } from "@self-learning/ui/layouts";
 import { formatDateAgo, formatSeconds } from "@self-learning/util/common";
 import { LessonType } from "@prisma/client";
+import { useTranslation } from "react-i18next";
 
 type Course = ResolvedValue<typeof getCourse>;
 
@@ -214,6 +215,7 @@ function CourseHeader({
 
 		return null;
 	}, [completion, content]);
+	const { t } = useTranslation();
 
 	return (
 		<section className="flex flex-col gap-16">
@@ -254,15 +256,19 @@ function CourseHeader({
 
 						<ul className="absolute bottom-0 grid w-full grid-cols-3 divide-x divide-secondary rounded-b-lg border border-light-border border-t-transparent bg-white bg-opacity-80 p-2 text-center">
 							<li className="flex flex-col">
-								<span className="font-semibold text-secondary">Lerneinheiten</span>
+								<span className="font-semibold text-secondary">
+									{t("learning_unit")}
+								</span>
 								<span className="text-light">{summary.lessons}</span>
 							</li>
 							<li className="flex flex-col">
-								<span className="font-semibold text-secondary">Kapitel</span>
+								<span className="font-semibold text-secondary">{t("chapter")}</span>
 								<span className="text-light">{summary.chapters}</span>
 							</li>
 							<li className="flex flex-col">
-								<span className="font-semibold text-secondary">Dauer</span>
+								<span className="font-semibold text-secondary">
+									{t("duration")}
+								</span>
 								<span className="text-light">
 									{formatSeconds(summary.duration)}
 								</span>
@@ -277,8 +283,8 @@ function CourseHeader({
 						>
 							<span>
 								{completion?.courseCompletion.completedLessonCount === 0
-									? "Starten"
-									: "Fortfahren"}
+									? t("start")
+									: t("Continue")}
 							</span>
 							<PlayIcon className="h-5" />
 						</Link>
@@ -289,7 +295,7 @@ function CourseHeader({
 							className="btn-primary disabled:opacity-50"
 							onClick={() => enroll({ courseId: course.courseId })}
 						>
-							<span>Zum Lernplan hinzufügen</span>
+							<span>{t("add_to_learning_plan")}</span>
 							<PlusCircleIcon className="h-5" />
 						</button>
 					)}
@@ -301,10 +307,11 @@ function CourseHeader({
 
 function TableOfContents({ content, course }: { content: ToC.Content; course: Course }) {
 	const completion = useCourseCompletion(course.slug);
+	const { t } = useTranslation();
 
 	return (
 		<section className="flex flex-col gap-8">
-			<h2 className="mb-4 text-4xl">Inhalt</h2>
+			<h2 className="mb-4 text-4xl">{t("content")}</h2>
 			<ul className="flex flex-col gap-16">
 				{content.map((chapter, index) => (
 					<li key={index} className="flex flex-col rounded-lg bg-gray-100 p-8">
@@ -358,14 +365,15 @@ function Lesson({
 }
 
 function CreatedUpdatedDates({ createdAt, updatedAt }: { createdAt: string; updatedAt: string }) {
+	const { t } = useTranslation();
 	return (
 		<div className="flex flex-wrap gap-2 text-xs text-light">
 			<span>
-				Erstellt: <span>{createdAt}</span>
+				{t("created")} <span>{createdAt}</span>
 			</span>
 			<span>|</span>
 			<span>
-				Letzte Änderung: <span>{updatedAt}</span>
+				{t("last_change")} <span>{updatedAt}</span>
 			</span>
 		</div>
 	);

@@ -18,8 +18,10 @@ import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function SpecializationManagementPage() {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const { page = 1, title = "" } = router.query;
 	const [titleFilter, setTitle] = useState(title);
@@ -62,21 +64,21 @@ export default function SpecializationManagementPage() {
 			});
 			showToast({
 				type: "success",
-				title: "Kurs hinzugefügt",
-				subtitle: `Kurs "${course.title}" wurde erfolgreich hinzugefügt.`
+				title: t("course_added"),
+				subtitle: t("course_added_subtitle", { course_title: course.title })
 			});
 		} catch (error) {
 			console.error(error);
 
 			if (error instanceof TRPCClientError) {
-				showToast({ type: "error", title: "Fehler", subtitle: error.message });
+				showToast({ type: "error", title: t("error"), subtitle: error.message });
 			}
 		}
 	};
 
 	async function handleRemoveCourse(course: { title: string; courseId: string }): Promise<void> {
 		const confirmed = window.confirm(
-			`Kurs "${course.title}" wirklich aus dieser Spezialisierung entfernen?}"`
+			t("confirm_remove_specialization", { course_title: course.title })
 		);
 
 		if (!specialization || !confirmed) return;
@@ -89,14 +91,14 @@ export default function SpecializationManagementPage() {
 			});
 			showToast({
 				type: "success",
-				title: "Kurs entfernt",
-				subtitle: `Kurs "${course.title}" wurde entfernt.`
+				title: t("course_removed"),
+				subtitle: t("course_removed_subtitle", { course_title: course.title })
 			});
 		} catch (error) {
 			console.error(error);
 
 			if (error instanceof TRPCClientError) {
-				showToast({ type: "error", title: "Fehler", subtitle: error.message });
+				showToast({ type: "error", title: t("error"), subtitle: error.message });
 			}
 		}
 	}
@@ -114,9 +116,13 @@ export default function SpecializationManagementPage() {
 		return (
 			<Unauthorized>
 				<ul className="list-inside list-disc">
-					<li>Admininstratoren</li>
-					<li>Admininstratoren für Fachbereich ({router.query.subjectId})</li>
-					<li>Admininstratoren für Spezialisierung ({router.query.specializationId})</li>
+					<li>{t("admins")}</li>
+					<li>{t("admins_for_subjects", { subject: router.query.subjectId })}</li>
+					<li>
+						{t("admins_for_specializations", {
+							specialization: router.query.specializationId
+						})}
+					</li>
 				</ul>
 			</Unauthorized>
 		);
@@ -127,7 +133,7 @@ export default function SpecializationManagementPage() {
 			<TopicHeader
 				imgUrlBanner={specialization.imgUrlBanner}
 				parentLink="/subjects"
-				parentTitle="Fachgebiet"
+				parentTitle={t("subject")}
 				title={specialization.title}
 				subtitle={specialization.subtitle}
 			>
@@ -136,14 +142,14 @@ export default function SpecializationManagementPage() {
 					className="btn-primary absolute top-8 w-fit self-end"
 				>
 					<PencilIcon className="icon h-5" />
-					<span>Editieren</span>
+					<span>{t("edit")}</span>
 				</Link>
 			</TopicHeader>
 
 			<CenteredContainerXL>
 				<SectionHeader
-					title="Kurse"
-					subtitle="Kurse, die dieser Spezialisierung zugeordnet sind."
+					title={t("courses")}
+					subtitle={t("courses_assigned_to_specialization")}
 				/>
 
 				<div className="mb-8 flex flex-wrap gap-4">
@@ -152,12 +158,12 @@ export default function SpecializationManagementPage() {
 						href={`/teaching/courses/create?specializationId=${specialization.specializationId}&subjectId=${specialization.subjectId}`}
 					>
 						<PlusIcon className="icon h-5" />
-						<span>Neuen Kurs erstellen</span>
+						<span>{t("create_course")}</span>
 					</Link>
 
 					<button className="btn-stroked w-fit" onClick={() => setAddCourseDialog(true)}>
 						<LinkIcon className="icon h-5" />
-						<span>Existierenden Kurs hinzufügen</span>
+						<span>{t("add_existing_course")}</span>
 					</button>
 
 					{addCourseDialog && (
@@ -166,7 +172,7 @@ export default function SpecializationManagementPage() {
 				</div>
 
 				<SearchField
-					placeholder="Suche nach Titel"
+					placeholder={t("search_for_title")}
 					onChange={e => setTitle(e.target.value)}
 				/>
 
@@ -178,8 +184,8 @@ export default function SpecializationManagementPage() {
 							head={
 								<>
 									<TableHeaderColumn></TableHeaderColumn>
-									<TableHeaderColumn>Titel</TableHeaderColumn>
-									<TableHeaderColumn>Von</TableHeaderColumn>
+									<TableHeaderColumn>{t("title")}</TableHeaderColumn>
+									<TableHeaderColumn>{t("by")}</TableHeaderColumn>
 									<TableHeaderColumn></TableHeaderColumn>
 								</>
 							}
@@ -211,7 +217,7 @@ export default function SpecializationManagementPage() {
 										<div className="flex justify-end">
 											<button
 												className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-red-500"
-												title="Aus Spezialisierung entfernen"
+												title={t("remove_from_specialization")}
 												onClick={() => handleRemoveCourse(course)}
 											>
 												<XMarkIcon className="h-5" />

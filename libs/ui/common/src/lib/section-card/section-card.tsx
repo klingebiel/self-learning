@@ -27,11 +27,23 @@ export function SectionCardHeader({
 	);
 }
 
-export function SectionHeader({ title, subtitle }: { title: string; subtitle?: string | null }) {
+export function SectionHeader({
+	title,
+	subtitle,
+	button
+}: {
+	title: string;
+	subtitle?: string | null;
+	button?: ReactNode;
+}) {
 	return (
-		<div className="mb-8 grid items-start gap-4">
-			<h2 className="text-4xl">{title}</h2>
-			{subtitle && <p className="text-light">{subtitle}</p>}
+		<div className="mb-8 mt-4">
+			<div className="flex items-center gap-4">
+				<h2 className="flex-grow text-4xl">{title}</h2>
+
+				{button && <div className="mr-0.5">{button}</div>}
+			</div>
+			{subtitle && <p className="mt-2 text-light">{subtitle}</p>}{" "}
 		</div>
 	);
 }

@@ -4,9 +4,11 @@ import { useRequiredSession } from "@self-learning/ui/layouts";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/router";
 import { SpecializationEditor } from "../create";
+import { useTranslation } from "react-i18next";
 
 export default function SpecializationEditPage() {
 	useRequiredSession();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const { subjectId, specializationId } = router.query;
 	const { mutateAsync: updateSpecialization } = trpc.specialization.update.useMutation();
@@ -24,13 +26,17 @@ export default function SpecializationEditPage() {
 				data: specFromForm
 			});
 
-			showToast({ type: "success", title: "Spezialisierung geändert", subtitle: spec.title });
+			showToast({
+				type: "success",
+				title: t("specialization_changed"),
+				subtitle: spec.title
+			});
 			router.push(`/teaching/subjects/${subjectId}/${spec.specializationId}/edit`);
 		} catch (error) {
 			console.error(error);
 
 			if (error instanceof TRPCClientError) {
-				showToast({ type: "error", title: "Fehler", subtitle: error.message });
+				showToast({ type: "error", title: t("error"), subtitle: error.message });
 			}
 		}
 	};

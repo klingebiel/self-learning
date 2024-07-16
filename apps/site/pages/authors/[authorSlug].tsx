@@ -7,6 +7,7 @@ import { GetServerSideProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 type Author = ResolvedValue<typeof getAuthor>;
 
@@ -71,6 +72,7 @@ function getAuthor(slug: string | undefined) {
 }
 
 export default function AuthorPage({ author, aboutMeMarkdown }: AuthorPageProps) {
+	const { t } = useTranslation();
 	return (
 		<div className="min-h-screen">
 			<CenteredSection className="bg-gray-50">
@@ -87,7 +89,7 @@ export default function AuthorPage({ author, aboutMeMarkdown }: AuthorPageProps)
 
 			<CenteredSection className="bg-white">
 				<div className="flex flex-col gap-8">
-					<h2 className="text-3xl">Kurse</h2>
+					<h2 className="text-3xl">{t("courses")}</h2>
 					<ItemCardGrid>
 						{author.courses.map(course => (
 							<Link href={`/courses/${course.slug}`} key={course.slug}>

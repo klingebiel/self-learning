@@ -4,6 +4,7 @@ import { trpc } from "@self-learning/api-client";
 import { DropdownDialog, ImageOrPlaceholder } from "@self-learning/ui/common";
 import { inferRouterOutputs } from "@trpc/server";
 import { Fragment, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type AuthorFromGetAllQuery = inferRouterOutputs<AppRouter>["author"]["getAll"][0];
 
@@ -17,6 +18,7 @@ export function AddAuthorDialog({
 	open: boolean;
 	onClose: (author?: AuthorFromGetAllQuery) => void;
 }) {
+	const { t } = useTranslation();
 	const { data: _authors } = trpc.author.getAll.useQuery();
 	const [filter, setFilter] = useState("");
 
@@ -37,7 +39,7 @@ export function AddAuthorDialog({
 				<DropdownDialog.SearchInput
 					filter={filter}
 					setFilter={setFilter}
-					placeholder="Suche nach Autor"
+					placeholder={t("search_for_author")}
 				/>
 
 				<DropdownDialog.Options>

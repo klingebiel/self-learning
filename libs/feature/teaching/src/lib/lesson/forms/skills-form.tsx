@@ -7,11 +7,13 @@ import { memo, useEffect, useState } from "react";
 import { SelectSkillDialog } from "../../skills/skill-dialog/select-skill-dialog";
 import { useFormContext } from "react-hook-form";
 import { LessonFormModel } from "../lesson-form-model";
-import { SelectSkillsView } from "../../skills/skill-dialog/select-skill-view";
+import { LabeledFieldSelectSkillsView } from "../../skills/skill-dialog/select-skill-view";
+import { useTranslation } from "react-i18next";
 
 type SkillModalIdentifier = "teachingGoals" | "requirements";
 
-export default function SkillForm() {
+export function SkillForm() {
+	const { t } = useTranslation();
 	const { setValue, watch } = useFormContext<LessonFormModel>();
 
 	const watchingSkills = {
@@ -43,37 +45,33 @@ export default function SkillForm() {
 
 	return (
 		<Form.SidebarSection>
-			<Form.SidebarSectionTitle
-				title="Skills"
-				subtitle="Vermittelte und Benötigte Skills dieser Lerneinheit"
-			/>
+			<Form.SidebarSectionTitle title="Skills" subtitle={t("skills_form_subtitle")} />
 			<LinkedSkillRepositoryMemorized selectRepository={selectRepository} />
 			{selectedRepository && (
 				<>
-					<LabeledField label="Vermittelte Skills">
-						<SelectSkillsView
-							skills={watchingSkills["teachingGoals"]}
-							onDeleteSkill={skill => {
-								deleteSkill(skill, "teachingGoals");
-							}}
-							onAddSkill={skill => {
-								addSkills(skill, "teachingGoals");
-							}}
-							repoId={selectedRepository.id}
-						/>
-					</LabeledField>
-					<LabeledField label="Benötigte Skills">
-						<SelectSkillsView
-							skills={watchingSkills["requirements"]}
-							onDeleteSkill={skill => {
-								deleteSkill(skill, "requirements");
-							}}
-							onAddSkill={skill => {
-								addSkills(skill, "requirements");
-							}}
-							repoId={selectedRepository.id}
-						/>
-					</LabeledField>
+					<LabeledFieldSelectSkillsView
+						lable={t("conveyed_skills")}
+						skills={watchingSkills["teachingGoals"]}
+						onDeleteSkill={skill => {
+							deleteSkill(skill, "teachingGoals");
+						}}
+						onAddSkill={skill => {
+							addSkills(skill, "teachingGoals");
+						}}
+						repoId={selectedRepository.id}
+					/>
+
+					<LabeledFieldSelectSkillsView
+						lable={t("necessary_skills")}
+						skills={watchingSkills["requirements"]}
+						onDeleteSkill={skill => {
+							deleteSkill(skill, "requirements");
+						}}
+						onAddSkill={skill => {
+							addSkills(skill, "requirements");
+						}}
+						repoId={selectedRepository.id}
+					/>
 					{selectSkillModal && (
 						<SelectSkillDialog
 							onClose={skill => {
@@ -96,6 +94,7 @@ function LinkedSkillRepository({
 }: {
 	selectRepository: (id: SkillRepositoryModel) => void;
 }) {
+	const { t } = useTranslation();
 	// TODO Make a method to get a smaller version of the repository
 	const { data: repositories, isLoading } = trpc.skill.getRepositories.useQuery();
 
@@ -113,7 +112,7 @@ function LinkedSkillRepository({
 			) : (
 				<>
 					{repositories && repositories.length > 0 && (
-						<LabeledField label="Verlinkte Skill-Repositories">
+						<LabeledField label={t("linked_skill_repositories")}>
 							<RepositoryDropDown repositories={repositories} onChange={onChange} />
 						</LabeledField>
 					)}

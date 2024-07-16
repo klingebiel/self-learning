@@ -4,8 +4,10 @@ import { ReactComponent as EnvStudySvg } from "../../svg/environmental-study.svg
 import { ReactComponent as SoftwareEngineerSvg } from "../../svg/software-engineer.svg";
 import { ReactComponent as PersonalInformationSvg } from "../../svg/teams.svg";
 import { ReactComponent as TutorialSvg } from "../../svg/tutorial.svg";
+import { useTranslation } from "react-i18next";
 
 export default function AdminPage() {
+	const { t } = useTranslation();
 	const session = useRequiredSession();
 
 	if (session.data?.user.role !== "ADMIN") {
@@ -14,36 +16,36 @@ export default function AdminPage() {
 
 	return (
 		<CenteredSection className="bg-gray-50">
-			<h1 className="mb-16 text-5xl">Verwaltung</h1>
+			<h1 className="mb-16 text-5xl">{t("management")}</h1>
 
 			<div className="grid grid-cols-2 gap-8">
 				<Card
 					href="/admin/lessons"
 					imageElement={<TutorialSvg />}
-					title="Lerneinheiten verwalten"
+					title={t("manage_lessons")}
 				/>
 
 				<Card
 					href="/admin/courses"
 					imageElement={<SoftwareEngineerSvg />}
-					title="Kurse verwalten"
+					title={t("manage_courses")}
 				/>
 
 				<Card
 					href="/admin/subjects"
 					imageElement={<EnvStudySvg />}
-					title="Fachgebiete verwalten"
+					title={t("manage_subjects")}
 				/>
 
 				<Card
 					href="/admin/authors"
 					imageElement={<PersonalInformationSvg />}
-					title="Autoren verwalten"
+					title={t("manage_authors")}
 				/>
 				<Card
 					href="/admin/licenses"
 					imageElement={<PersonalInformationSvg />}
-					title="Lizenzen verwalten"
+					title={t("manage_licenses")}
 				/>
 			</div>
 		</CenteredSection>

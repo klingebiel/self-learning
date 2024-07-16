@@ -7,6 +7,7 @@ import {
 	Paginator
 } from "@self-learning/ui/common";
 import { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function SearchCourseDialog({
 	open,
@@ -15,6 +16,7 @@ export function SearchCourseDialog({
 	open: boolean;
 	onClose: OnDialogCloseFn<{ courseId: string; title: string }>;
 }) {
+	const { t } = useTranslation();
 	const [title, setTitle] = useState("");
 	const [page, setPage] = useState(1);
 	const { data: courses } = trpc.course.findMany.useQuery(
@@ -34,7 +36,7 @@ export function SearchCourseDialog({
 				<DropdownDialog.SearchInput
 					filter={title}
 					setFilter={setTitle}
-					placeholder="Suche nach Kurs"
+					placeholder={t("search_for_course")}
 				/>
 
 				<DropdownDialog.PaginationContainer>

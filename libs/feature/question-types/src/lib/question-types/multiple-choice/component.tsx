@@ -6,6 +6,7 @@ import { Feedback } from "../../feedback";
 import { useQuestion } from "../../use-question-hook";
 import { LessonLayoutProps } from "@self-learning/lesson";
 import { LessonType } from "@prisma/client";
+import { useTranslation } from "react-i18next";
 
 export default function MultipleChoiceAnswer({
 	questionStep,
@@ -85,6 +86,7 @@ export function MultipleChoiceOption({
 			? "bg-emerald-50 border-emerald-500"
 			: "bg-red-50 border-red-500";
 	}
+	const { t } = useTranslation();
 
 	if (justifyChoice) {
 		return (
@@ -107,8 +109,8 @@ export function MultipleChoiceOption({
 					{children}
 				</button>
 				<div className="rounded-b-lg py-2 px-8">
-					<div className="py-1">Bitte Begründe deine Antwort:</div>
-					<textarea className="w-full" placeholder="Begründung..."></textarea>
+					<div className="py-1">{t("give_reason_for_answer")}:</div>
+					<textarea className="w-full" placeholder={t("reasons")}></textarea>
 				</div>
 			</div>
 		);

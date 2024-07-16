@@ -15,6 +15,7 @@ import { TRPCClientError } from "@trpc/client";
 import { inferRouterOutputs } from "@trpc/server";
 import { useState } from "react";
 import { AddAuthorDialog, AuthorFromGetAllQuery } from "../author/add-author-dialog";
+import { useTranslation } from "react-i18next";
 
 type AuthorSpecializationMap = {
 	[specializationId: string]: {
@@ -66,10 +67,10 @@ export function SpecializationPermissionsDialog({
 	});
 
 	const [openAddAuthorDialog, setOpenAddAuthorDialog] = useState(false);
+	const { t } = useTranslation();
 
 	const { mutateAsync: updateSpecAdmins } =
 		trpc.subject.setSpecializationPermissions.useMutation();
-
 	const onAddAuthorDialogClosed: OnDialogCloseFn<AuthorFromGetAllQuery> = author => {
 		setOpenAddAuthorDialog(false);
 		if (!author) return;
@@ -77,7 +78,7 @@ export function SpecializationPermissionsDialog({
 		if (authors.some(a => a.username === author.username)) {
 			showToast({
 				type: "warning",
-				title: "Bereits vorhanden",
+				title: t("already_exists"),
 				subtitle: author.displayName
 			});
 			return;
@@ -101,13 +102,13 @@ export function SpecializationPermissionsDialog({
 	async function onSave() {
 		try {
 			await updateSpecAdmins({ subjectId, specMap });
-			showToast({ type: "success", title: "Berechtigte Autoren aktualisiert", subtitle: "" });
+			showToast({ type: "success", title: t("updated_specs_admin"), subtitle: "" });
 			onClose();
 		} catch (error) {
 			console.error(error);
 
 			if (error instanceof TRPCClientError) {
-				showToast({ type: "error", title: "Fehler", subtitle: error.message });
+				showToast({ type: "error", title: t("error"), subtitle: error.message });
 			}
 		}
 	}
@@ -115,23 +116,19 @@ export function SpecializationPermissionsDialog({
 	return (
 		<Dialog
 			onClose={onClose}
-			title="Berechtigte Autoren"
+			title={t("authors_with_permissions")}
 			style={{ maxWidth: "80vw", maxHeight: "80vh" }}
 		>
 			<div className="flex flex-col gap-4 divide-x divide-light-border overflow-auto">
 				<div className="text-sm text-light">
 					<p>
-						In diesem Dialog können Autoren <strong>Spezialisierungen</strong>{" "}
-						zugeordnet werden. Nur Autoren, die einer Spezialisierung zugeordnet sind,
-						können diese bearbeiten.
+						{t("author_permission_text_1")}
+						<strong>{t("specialization")}</strong> {t("author_permission_text_2")}
 					</p>
+					<p>{t("author_permission_text_3")}</p>
 					<p>
-						Admins und Fachbereich-Admins können ebenfalls Spezialisierungen bearbeiten
-					</p>
-					<p>
-						In der folgenden Tabelle sind alle Autoren aufgelistet, die mindestens einer
-						Spezialisierung zugeordnet sind. Weitere Autoren können durch den{" "}
-						<strong>Autor hinzufügen</strong>-Button hinzugefügt werden.
+						{t("author_permission_text_4")} <strong>{t("add_author")}</strong>
+						{t("author_permission_text_5")}
 					</p>
 				</div>
 
@@ -141,7 +138,7 @@ export function SpecializationPermissionsDialog({
 					onClick={() => setOpenAddAuthorDialog(true)}
 				>
 					<PlusIcon className="icon h-5" />
-					<span>Autor hinzufügen</span>
+					<span>{t("add_author")}</span>
 				</button>
 
 				{openAddAuthorDialog && (
@@ -151,7 +148,7 @@ export function SpecializationPermissionsDialog({
 				<Table
 					head={
 						<>
-							<TableHeaderColumn>Autor</TableHeaderColumn>
+							<TableHeaderColumn>{t("author")}</TableHeaderColumn>
 							{specializations.map(spec => (
 								<TableHeaderColumn key={spec.specializationId}>
 									{spec.title}
@@ -206,7 +203,7 @@ export function SpecializationPermissionsDialog({
 
 			<DialogActions onClose={onClose}>
 				<button type="button" className="btn-primary" onClick={onSave}>
-					Speichern
+					{t("save")}
 				</button>
 			</DialogActions>
 		</Dialog>

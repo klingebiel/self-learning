@@ -12,6 +12,7 @@ import { AddChildButton, SkillDeleteOption } from "./skill-taskbar";
 import styles from "./folder-table.module.css";
 import { SkillFolderVisualization, SkillSelectHandler, UpdateVisuals } from "./skill-display";
 import { isTruthy } from "@self-learning/util/common";
+import { useTranslation } from "react-i18next";
 
 export function ListSkillEntryWithChildren({
 	skillResolver,
@@ -76,6 +77,7 @@ function SkillRow({
 	handleSelection: SkillSelectHandler;
 	updateSkillDisplay: UpdateVisuals;
 }) {
+	const { t } = useTranslation();
 	const depthCssStyle = {
 		"--depth": depth
 	} as React.CSSProperties;
@@ -93,9 +95,9 @@ function SkillRow({
 
 	let title = "";
 	if (skill.isCycleMember) {
-		title = "Dieser Skill ist Teil eines Zyklus.";
+		title = t("skill_is_cycle");
 	} else if (skill.hasNestedCycleMembers) {
-		title = "Dieser Ordner enthält einen Zyklus, ist aber kein Teil davon.";
+		title = t("skill_has_cycle");
 	}
 	const cycleError = skill.isCycleMember;
 	const cycleWarning = skill.hasNestedCycleMembers && !skill.isSelected && !skill.isCycleMember;
@@ -177,7 +179,7 @@ function SkillRow({
 					</div>
 				</div>
 			</TableDataColumn>
-			<TableDataColumn>{"nicht vorhanden"}</TableDataColumn>
+			<TableDataColumn>{t("not_available")}</TableDataColumn>
 		</tr>
 	);
 }
@@ -189,9 +191,10 @@ function QuickEditButton({
 	onClick: () => void;
 	skill: SkillFolderVisualization;
 }) {
+	const { t } = useTranslation();
 	return (
 		<button
-			title="Bearbeiten"
+			title={t("edit")}
 			className="mr-3 px-2 hover:text-secondary"
 			onClick={onClick}
 			disabled={skill.isSelected}

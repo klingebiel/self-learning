@@ -1,12 +1,13 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
 import { trpc } from "@self-learning/api-client";
-import { IconButton, ImageChip, OnDialogCloseFn } from "@self-learning/ui/common";
+import { AddButton, ImageChip, OnDialogCloseFn } from "@self-learning/ui/common";
 import { Form } from "@self-learning/ui/forms";
 import Link from "next/link";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { CourseFormModel } from "../course/course-form-model";
 import { AddAuthorDialog } from "./add-author-dialog";
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 
 export function AuthorsForm({ subtitle, emptyString }: { subtitle: string; emptyString: string }) {
 	const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -33,21 +34,20 @@ export function AuthorsForm({ subtitle, emptyString }: { subtitle: string; empty
 	};
 
 	function handleRemove(index: number) {
-		window.confirm("Autor entfernen?") && remove(index);
+		window.confirm(i18next.t("remove_author")) && remove(index);
 	}
 
+	const { t } = useTranslation();
 	return (
 		<Form.SidebarSection>
-			<Form.SidebarSectionTitle title="Autoren" subtitle={subtitle} />
-
-			<IconButton
-				type="button"
-				data-testid="author-add"
-				onClick={() => setOpenAddDialog(true)}
-				title="Hinzufügen"
-				text="Hinzufügen"
-				icon={<PlusIcon className="h-5" />}
-			/>
+			<Form.SidebarSectionTitle title={t("authors")} subtitle={subtitle}>
+				<AddButton
+					onAdd={() => setOpenAddDialog(true)}
+					title={t("add_author")}
+					data-testid="author-add"
+					label={<span>{t("add")}</span>}
+				/>
+			</Form.SidebarSectionTitle>
 
 			{authors.length === 0 ? (
 				<p className="text-sm text-light">{emptyString}</p>

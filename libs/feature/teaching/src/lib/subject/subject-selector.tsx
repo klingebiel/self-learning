@@ -2,6 +2,7 @@ import { Combobox } from "@headlessui/react";
 import { trpc } from "@self-learning/api-client";
 import { DropdownDialog, ImageOrPlaceholder, OnDialogCloseFn } from "@self-learning/ui/common";
 import { Fragment, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Dialog that allows the user to select an author from a list of authors.
@@ -13,6 +14,7 @@ export function SpecializationSelector({
 	open: boolean;
 	onClose: OnDialogCloseFn<{ specializationId: string; title: string }>;
 }) {
+	const { t } = useTranslation();
 	const { data: subjects } = trpc.subject.getAllWithSpecializations.useQuery();
 	const [filter, setFilter] = useState("");
 
@@ -39,7 +41,7 @@ export function SpecializationSelector({
 				<DropdownDialog.SearchInput
 					filter={filter}
 					setFilter={setFilter}
-					placeholder="Suche nach Spezialisierung"
+					placeholder={t("search_for_specialization")}
 				/>
 
 				<DropdownDialog.Options>

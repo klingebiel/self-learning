@@ -25,6 +25,8 @@ import { MDXRemote } from "next-mdx-remote";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 export type LessonProps = LessonLayoutProps & {
 	markdown: {
@@ -59,7 +61,7 @@ export const getServerSideProps: GetServerSideProps<LessonProps> = async ({ para
 	const { content: article } = findContentType("article", lesson.content as LessonContent);
 
 	if (article) {
-		mdArticle = await compileMarkdown(article.value.content ?? "Kein Inhalt.");
+		mdArticle = await compileMarkdown(article.value.content ?? t("no_content"));
 
 		// Remove article content to avoid duplication
 		article.value.content = "(replaced)";
@@ -67,7 +69,7 @@ export const getServerSideProps: GetServerSideProps<LessonProps> = async ({ para
 
 	// TODO change to check if the lesson is self requlated
 	if (lesson.lessonType === LessonType.SELF_REGULATED) {
-		mdQuestion = await compileMarkdown(lesson.selfRegulatedQuestion ?? "Kein Inhalt.");
+		mdQuestion = await compileMarkdown(lesson.selfRegulatedQuestion ?? t("no_content"));
 	}
 
 	return {
@@ -114,6 +116,7 @@ function usePreferredMediaType(lesson: LessonProps["lesson"]) {
 }
 
 export default function Lesson({ lesson, course, markdown }: LessonProps) {
+	const { t } = useTranslation();
 	const [showDialog, setShowDialog] = useState(lesson.lessonType === LessonType.SELF_REGULATED);
 
 	const { content: video } = findContentType("video", lesson.content as LessonContent);
@@ -139,7 +142,9 @@ export default function Lesson({ lesson, course, markdown }: LessonProps) {
 					{video?.value.url ? (
 						<VideoPlayer url={video.value.url} />
 					) : (
-						<div className="py-16 text-center text-red-500">Error: Missing URL</div>
+						<div className="py-16 text-center text-red-500">
+							{t("missing_url_error")}
+						</div>
 					)}
 				</div>
 			)}
@@ -227,14 +232,14 @@ function LessonHeader({
 }
 
 function DefaultLicenseLabel() {
+	const { t } = useTranslation();
 	const { data, isLoading } = trpc.licenseRouter.getDefault.useQuery();
 	const fallbackLicense = {
-		name: "Keine Lizenz verfügbar",
+		name: t("missing_license"),
 		logoUrl: "",
 		url: "",
 		oerCompatible: false,
-		licenseText:
-			"*Für diese Lektion ist keine Lizenz verfügbar. Bei Nachfragen, wenden Sie sich an den Autor*"
+		licenseText: t("missing_license_text")
 	};
 	if (!isLoading && !data) {
 		console.log("No default license found");
@@ -244,8 +249,9 @@ function DefaultLicenseLabel() {
 }
 
 function LicenseLabel({ license }: { license: NonNullable<LessonProps["lesson"]["license"]> }) {
+	const { t } = useTranslation();
 	return (
-		<LabeledField label="Lizenz">
+		<LabeledField label={t("license")}>
 			<LicenseChip
 				name={license.name}
 				imgUrl={license.logoUrl ?? undefined}
@@ -267,6 +273,7 @@ function LessonControls({
 	const completion = useCourseCompletion(course.slug);
 	const isCompletedLesson = !!completion?.completedLessons[lesson.lessonId];
 	const hasQuiz = (lesson.meta as LessonMeta).hasQuiz;
+	const { t } = useTranslation();
 
 	return (
 		<div className="flex w-full flex-wrap gap-2 xl:w-fit xl:flex-row">
@@ -276,7 +283,7 @@ function LessonControls({
 					className="btn-primary flex h-fit w-full flex-wrap-reverse text-sm xl:w-fit"
 					data-testid="quizLink"
 				>
-					<span>Zur Lernkontrolle</span>
+					<span> {t("to_learn_check")} </span>
 					<PlayIcon className="h-6 shrink-0" />
 				</Link>
 			)}
@@ -286,7 +293,7 @@ function LessonControls({
 					className="btn-primary flex h-fit w-full flex-wrap-reverse text-sm xl:w-fit"
 					onClick={markAsCompleted}
 				>
-					<span>Als abgeschlossen markieren</span>
+					<span>{t("marked_finished")}</span>
 					<CheckCircleIcon className="h-6 shrink-0" />
 				</button>
 			)}
@@ -363,16 +370,17 @@ function SelfRegulatedPreQuestion({
 	setShowDialog: Dispatch<SetStateAction<boolean>>;
 }) {
 	const [userAnswer, setUserAnswer] = useState("");
+	const { t } = useTranslation();
 
 	return (
 		<>
 			<div>
-				<h1>Aktivierungsfrage</h1>
+				<h1>{t("activation_ask")}</h1>
 				<MarkdownContainer className="w-full py-4">
 					<MDXRemote {...question} />
 				</MarkdownContainer>
 				<div className="mt-8">
-					<h2>Deine Antwort:</h2>
+					<h2>{t("answer")}</h2>
 					<textarea
 						className="w-full"
 						placeholder="..."
@@ -388,7 +396,7 @@ function SelfRegulatedPreQuestion({
 						}}
 						disabled={userAnswer.length == 0}
 					>
-						Antwort Speichern
+						{t("save_answer")}
 					</button>
 				</div>
 			</div>

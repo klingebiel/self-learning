@@ -6,13 +6,15 @@ export function LabeledField({
 	htmlFor,
 	error,
 	optional,
-	disabled
+	disabled,
+	button
 }: PropsWithChildren<{
 	label: string;
 	htmlFor?: string;
 	error?: string;
 	optional?: boolean;
 	disabled?: boolean;
+	button?: ReactNode;
 }>) {
 	return (
 		<fieldset
@@ -22,7 +24,10 @@ export function LabeledField({
 			disabled={disabled}
 		>
 			<label htmlFor={htmlFor}>
-				<span className="text-sm font-semibold">{label}</span>
+				<div className={"flex items-center justify-between"}>
+					<span className="text-sm font-semibold">{label}</span>
+					{button ? button : null}
+				</div>
 				{optional && <span className="px-2 text-xs text-light">Optional</span>}
 				{error && <span className="px-4 text-xs text-red-500">{error}</span>}
 			</label>

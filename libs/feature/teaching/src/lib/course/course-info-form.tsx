@@ -2,6 +2,7 @@ import { ImageOrPlaceholder } from "@self-learning/ui/common";
 import { Form, InputWithButton, LabeledField, Upload, useSlugify } from "@self-learning/ui/forms";
 import { Controller, useFormContext } from "react-hook-form";
 import { CourseFormModel } from "./course-form-model";
+import { useTranslation } from "react-i18next";
 
 /**
  * Allows the user to edit basic information about a course,
@@ -21,6 +22,7 @@ import { CourseFormModel } from "./course-form-model";
  * )
  */
 export function CourseInfoForm() {
+	const { t } = useTranslation();
 	const form = useFormContext<CourseFormModel & { content: unknown[] }>(); // widen content type to prevent circular path error
 	const {
 		register,
@@ -31,15 +33,15 @@ export function CourseInfoForm() {
 
 	return (
 		<Form.SidebarSection>
-			<Form.SidebarSectionTitle title="Daten" subtitle="Informationen über diesen Kurs." />
+			<Form.SidebarSectionTitle title={t("data")} subtitle={t("course_info")} />
 
 			<div className="flex flex-col gap-4">
-				<LabeledField label="Titel" error={errors.title?.message}>
+				<LabeledField label={t("title")} error={errors.title?.message}>
 					<input
 						{...register("title")}
 						type="text"
 						className="textfield"
-						placeholder="Die Neue Lerneinheit"
+						placeholder={t("new_unit")}
 						onBlur={slugifyIfEmpty}
 					/>
 				</LabeledField>
@@ -48,28 +50,28 @@ export function CourseInfoForm() {
 						input={
 							<input
 								className="textfield"
-								placeholder="die-neue-lerneinheit"
+								placeholder={t("new_unit_slug")}
 								type={"text"}
 								{...register("slug")}
 							/>
 						}
 						button={
 							<button type="button" className="btn-stroked" onClick={slugifyField}>
-								Generieren
+								{t("generate")}
 							</button>
 						}
 					/>
 				</LabeledField>
 
-				<LabeledField label="Untertitel" error={errors.subtitle?.message}>
+				<LabeledField label={t("sub_title")} error={errors.subtitle?.message}>
 					<textarea
 						{...register("subtitle")}
-						placeholder="1-2 Sätze über diesen Kurs."
+						placeholder={t("sub_title_placeholder")}
 						className="h-full"
 					/>
 				</LabeledField>
 
-				<LabeledField label="Bild" error={errors.imgUrl?.message} optional={true}>
+				<LabeledField label={t("image")} error={errors.imgUrl?.message} optional={true}>
 					<Controller
 						control={control}
 						name="imgUrl"

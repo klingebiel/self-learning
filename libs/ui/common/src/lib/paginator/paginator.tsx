@@ -2,6 +2,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Paginated } from "@self-learning/util/common";
 import Link from "next/link";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 type PaginatedLinks = {
 	front: number[];
@@ -63,13 +64,15 @@ export function Paginator({
 	}, [pagination]);
 
 	const { page, pageSize, totalCount, result } = pagination;
+	const { t } = useTranslation();
 
 	return (
 		<div className="flex flex-wrap items-center justify-between gap-4 py-4">
 			<p className="text-sm text-light">
-				Zeige{" "}
+				{t("show")}{" "}
 				<span className="font-medium text-black">{Math.min(result.length, pageSize)}</span>{" "}
-				von <span className="font-medium text-black">{totalCount}</span> Ergebnissen
+				{t("out_of")} <span className="font-medium text-black">{totalCount}</span>{" "}
+				{t("results_1")}
 			</p>
 			<nav
 				className="isolate inline-flex -space-x-px rounded-lg shadow-sm"

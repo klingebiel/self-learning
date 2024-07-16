@@ -12,6 +12,7 @@ import {
 import { SidebarEditorLayout } from "@self-learning/ui/layouts";
 import { OpenAsJsonButton } from "libs/feature/teaching/src/lib/json-editor-dialog";
 import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export function SubjectEditor({
 	initialSubject,
@@ -20,6 +21,7 @@ export function SubjectEditor({
 	initialSubject: Subject;
 	onSubmit: (s: Subject) => unknown;
 }) {
+	const { t } = useTranslation();
 	const form = useForm<Subject>({
 		resolver: zodResolver(subjectSchema),
 		defaultValues: initialSubject
@@ -42,13 +44,13 @@ export function SubjectEditor({
 						<>
 							<div>
 								<span className="font-semibold text-secondary">
-									Fachgebiet{" "}
-									{initialSubject.subjectId === "" ? "erstellen" : "speichern"}
+									{t("subject")}{" "}
+									{initialSubject.subjectId === "" ? t("create") : t("save")}
 								</span>
 
 								<h1 className="text-2xl">
 									{initialSubject.subjectId === ""
-										? "Neues Fachgebiet"
+										? t("new_subject")
 										: initialSubject.title}
 								</h1>
 							</div>
@@ -56,13 +58,13 @@ export function SubjectEditor({
 							<OpenAsJsonButton form={form} validationSchema={subjectSchema} />
 
 							<button className="btn-primary w-full" type="submit">
-								{initialSubject.subjectId === "" ? "Erstellen" : "Speichern"}
+								{initialSubject.subjectId === "" ? t("create") : t("save")}
 							</button>
 
 							<Form.SidebarSection>
 								<Form.SidebarSectionTitle
-									title="Informationen"
-									subtitle="Informationen über dieses Fachgebiet."
+									title={t("information")}
+									subtitle={t("info_about_subject")}
 								></Form.SidebarSectionTitle>
 								<div className="flex flex-col gap-4">
 									<LabeledField label="Titel" error={errors.title?.message}>
@@ -89,18 +91,18 @@ export function SubjectEditor({
 													className="btn-stroked"
 													onClick={slugifyField}
 												>
-													Generieren
+													{t("generate")}
 												</button>
 											}
 										/>
 										<FieldHint>
-											Der <strong>slug</strong> wird in der URL angezeigt.
-											Muss einzigartig sein.
+											{t("show_slug_text_1")} <strong>slug</strong>{" "}
+											{t("show_slug_text_2")}
 										</FieldHint>
 									</LabeledField>
 
 									<LabeledField
-										label="Untertitel"
+										label={t("subtitle")}
 										error={errors.subtitle?.message}
 									>
 										<textarea
@@ -108,9 +110,7 @@ export function SubjectEditor({
 											{...register("subtitle")}
 											rows={16}
 										/>
-										<FieldHint>
-											Beschreibung dieses Fachgebiets in 2-3 Sätzen.
-										</FieldHint>
+										<FieldHint>{t("subject_description")}</FieldHint>
 									</LabeledField>
 								</div>
 							</Form.SidebarSection>
@@ -119,8 +119,8 @@ export function SubjectEditor({
 				>
 					<section>
 						<SectionHeader
-							title="Bild (Banner)"
-							subtitle="Bild, das als Banner am Seitenbeginn angezeigt wird."
+							title={t("image_banner_title")}
+							subtitle={t("image_banner_subtitle")}
 						/>
 
 						<Upload
@@ -137,8 +137,8 @@ export function SubjectEditor({
 
 					<section className="w-fit">
 						<SectionHeader
-							title="Bild (Karte)"
-							subtitle="Bild das auf Karten angezeigt wird."
+							title={t("image_card_title")}
+							subtitle={t("image_card_subtitle")}
 						/>
 
 						<Upload

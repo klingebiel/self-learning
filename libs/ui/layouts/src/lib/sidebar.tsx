@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { PropsWithChildren, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export function Sidebar({
 	header,
@@ -84,6 +85,7 @@ function ScrollableContent({ children }: PropsWithChildren<unknown>) {
 }
 
 function SidebarLinks() {
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	return (
@@ -91,19 +93,19 @@ function SidebarLinks() {
 			<SidebarLink
 				isActive={router.route === "/"}
 				href="/"
-				text="Startseite"
+				text={t("homepage")}
 				icon={<HomeIcon height="24" />}
 			/>
 			<SidebarLink
 				isActive={router.route === "/courses"}
 				href="/courses"
-				text="Lerninhalte"
+				text={t("lesson_contents")}
 				icon={<DocumentMagnifyingGlassIcon height="24" />}
 			/>
 			<SidebarLink
 				isActive={router.route === "/lessons/[lessonSlug]"}
 				href="/todo"
-				text="Mein Lernplan"
+				text={t("my_learn_plan")}
 				icon={<ClipboardDocumentListIcon height="24" />}
 			/>
 		</div>

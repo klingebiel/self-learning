@@ -6,6 +6,7 @@ import { ItemCardGrid, TopicHeader } from "@self-learning/ui/layouts";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { ReactComponent as VoidSvg } from "../../../svg/void.svg";
+import { useTranslation } from "react-i18next";
 
 type SubjectPageProps = {
 	subject: ResolvedValue<typeof getSubject>;
@@ -51,13 +52,14 @@ async function getSubject(subjectSlug: string) {
 
 export default function SubjectPage({ subject }: SubjectPageProps) {
 	const { title, subtitle, specializations, imgUrlBanner } = subject;
+	const { t } = useTranslation();
 
 	return (
 		<div className="bg-gray-50 pb-32">
 			<TopicHeader
 				imgUrlBanner={imgUrlBanner}
 				parentLink="/subjects"
-				parentTitle="Fachgebiet"
+				parentTitle={t("subject")}
 				title={title}
 				subtitle={subtitle}
 			/>
@@ -74,9 +76,7 @@ export default function SubjectPage({ subject }: SubjectPageProps) {
 					</ItemCardGrid>
 				) : (
 					<div className="grid gap-16 pt-16">
-						<span className="mx-auto font-semibold">
-							Leider gibt es hier noch keine Inhalte.
-						</span>
+						<span className="mx-auto font-semibold">{t("missing_content")}</span>
 						<div className="mx-auto w-full max-w-md ">
 							<VoidSvg />
 						</div>
@@ -94,6 +94,7 @@ function SpecializationCard({
 	subjectSlug: string;
 	specialization: SubjectPageProps["subject"]["specializations"][0];
 }) {
+	const { t } = useTranslation();
 	return (
 		<Link href={`/subjects/${subjectSlug}/${specialization.slug}`}>
 			<ImageCard
@@ -101,13 +102,13 @@ function SpecializationCard({
 				title={specialization.title}
 				subtitle={specialization.subtitle}
 				imgUrl={specialization.cardImgUrl}
-				badge={<ImageCardBadge text="Spezialisierung" className="bg-purple-500" />}
+				badge={<ImageCardBadge text={t("specialization")} className="bg-purple-500" />}
 				footer={
 					<span className="flex items-center gap-3 text-sm font-semibold text-emerald-500">
 						<Square3Stack3DIcon className="h-5" />
 						<span>
 							{specialization._count.courses}{" "}
-							{specialization._count.courses === 1 ? "Kurs" : "Kurse"}
+							{specialization._count.courses === 1 ? t("course") : t("courses")}
 						</span>
 					</span>
 				}

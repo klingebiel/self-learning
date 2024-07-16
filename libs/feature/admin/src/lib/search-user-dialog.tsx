@@ -7,6 +7,7 @@ import {
 	Paginator
 } from "@self-learning/ui/common";
 import { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function SearchUserDialog({
 	onClose,
@@ -16,6 +17,7 @@ export function SearchUserDialog({
 	/** Returns the `username` of the selected user, or `undefined`, if no user was selected. */
 	onClose: OnDialogCloseFn<string>;
 }) {
+	const { t } = useTranslation();
 	const [name, setName] = useState("");
 	const [page, setPage] = useState(1);
 	const { data: users } = trpc.admin.findUsers.useQuery(
@@ -35,7 +37,7 @@ export function SearchUserDialog({
 				<DropdownDialog.SearchInput
 					filter={name}
 					setFilter={setName}
-					placeholder="Suche nach Nutzer"
+					placeholder={t("search_for_user")}
 				/>
 
 				<DropdownDialog.PaginationContainer>

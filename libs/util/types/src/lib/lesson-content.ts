@@ -1,4 +1,5 @@
 import { z } from "zod";
+import i18next from "i18next";
 
 export const videoSchema = z.object({
 	type: z.literal("video"),
@@ -49,10 +50,10 @@ export const lessonContentSchema = z.discriminatedUnion("type", [
 
 export function getContentTypeDisplayName(contentType: LessonContentMediaType): string {
 	const names: { [contentType in LessonContentMediaType]: string } = {
-		video: "Video",
-		article: "Artikel",
-		pdf: "PDF",
-		iframe: "Externe Webseite"
+		video: i18next.t("video"),
+		article: i18next.t("article"),
+		pdf: i18next.t("pdf"),
+		iframe: i18next.t("iframe")
 	};
 
 	return names[contentType] ?? "Unknown Type";

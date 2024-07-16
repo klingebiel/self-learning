@@ -4,6 +4,7 @@ import { Dialog, DialogActions, LoadingBox, OnDialogCloseFn } from "@self-learni
 import { trpc } from "@self-learning/api-client";
 import { memo, useEffect, useState } from "react";
 import { SearchField } from "@self-learning/ui/forms";
+import { useTranslation } from "react-i18next";
 
 export function SelectSkillDialog({
 	onClose,
@@ -22,12 +23,13 @@ function SkillModal({
 	onClose: OnDialogCloseFn<SkillFormModel[]>;
 	repositoryId: string;
 }) {
+	const {t} = useTranslation();
 	const { data: skills, isLoading } = trpc.skill.getUnresolvedSkillsFromRepo.useQuery({
 		repoId: repositoryId
 	});
 
 	return (
-		<Dialog onClose={() => onClose(undefined)} title={"Füge die Skills hinzu"}>
+		<Dialog onClose={() => onClose(undefined)} title={t("add_skill_dialog_title")}>
 			{isLoading ? (
 				<LoadingBox />
 			) : (
@@ -70,11 +72,12 @@ function SelectSkillForm({
 		search !== ""
 			? skills.filter(skill => skill.name.toLowerCase().includes(search.toLowerCase()))
 			: skills;
+	const {t} = useTranslation();
 
 	return (
 		<>
 			<SearchField
-				placeholder="Suche nach Skills"
+				placeholder={t("search_for_skill")}
 				onChange={e => {
 					setSearch(e.target.value);
 				}}
@@ -82,7 +85,7 @@ function SelectSkillForm({
 			<div className="flex flex-col justify-between overflow-auto">
 				<section className="flex h-64 flex-col rounded-lg border border-light-border p-4">
 					<div className="flex flex-col">
-						{skills.length === 0 && <p>Keine Skills vorhanden</p>}
+						{skills.length === 0 && <p>{t("no_skills_available")}</p>}
 						{skills.length > 0 && (
 							<>
 								{filteredSkills
@@ -114,7 +117,7 @@ function SelectSkillForm({
 						onClose(skills.filter(skill => checkBoxMap.get(skill)));
 					}}
 				>
-					Speichern
+					{t("save")}
 				</button>
 			</DialogActions>
 		</>

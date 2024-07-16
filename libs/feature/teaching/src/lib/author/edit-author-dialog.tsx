@@ -7,6 +7,7 @@ import {
 } from "@self-learning/ui/common";
 import { InputWithButton, LabeledField, Upload, useSlugify } from "@self-learning/ui/forms";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 export const editAuthorSchema = z.object({
@@ -24,6 +25,7 @@ export function EditAuthorDialog({
 	author: Author;
 	onClose: OnDialogCloseFn<Author>;
 }) {
+	const { t } = useTranslation();
 	const form = useForm({
 		defaultValues: author,
 		resolver: zodResolver(editAuthorSchema)
@@ -43,7 +45,7 @@ export function EditAuthorDialog({
 				})}
 			>
 				<div className="flex flex-col gap-4">
-					<LabeledField label="Name" error={errors.displayName?.message}>
+					<LabeledField label={t("name")} error={errors.displayName?.message}>
 						<input
 							{...form.register("displayName")}
 							type="text"
@@ -69,7 +71,7 @@ export function EditAuthorDialog({
 									className="btn-stroked"
 									onClick={slugifyField}
 								>
-									Generieren
+									{t("generate")}
 								</button>
 							}
 						/>
@@ -79,7 +81,7 @@ export function EditAuthorDialog({
 						control={form.control}
 						name="imgUrl"
 						render={({ field }) => (
-							<LabeledField label="Bild" error={errors.imgUrl?.message}>
+							<LabeledField label={t("image")} error={errors.imgUrl?.message}>
 								<div className="flex w-full gap-4">
 									<div className="flex w-full flex-col gap-2">
 										<Upload
@@ -99,7 +101,7 @@ export function EditAuthorDialog({
 					></Controller>
 				</div>
 				<DialogActions onClose={onClose}>
-					<button className="btn-primary">Speichern</button>
+					<button className="btn-primary">{t("save")}</button>
 				</DialogActions>
 			</form>
 		</Dialog>

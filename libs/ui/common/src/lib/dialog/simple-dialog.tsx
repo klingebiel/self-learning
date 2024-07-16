@@ -1,4 +1,3 @@
-import { MarkdownViewer } from "@self-learning/ui/forms";
 import { CenteredContainer } from "@self-learning/ui/layouts";
 import React, { useState } from "react";
 import { Dialog, DialogActions } from "@self-learning/ui/common";

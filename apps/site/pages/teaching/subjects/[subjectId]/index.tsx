@@ -6,9 +6,11 @@ import { CenteredContainerXL, TopicHeader, Unauthorized } from "@self-learning/u
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function SubjectManagementPage() {
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	const [openPermissionDialog, setOpenPermissionDialog] = useState(false);
 	const { data: permissions } = trpc.me.permissions.useQuery();
@@ -31,8 +33,10 @@ export default function SubjectManagementPage() {
 		return (
 			<Unauthorized>
 				<ul className="list-inside list-disc">
-					<li>Admininstratoren</li>
-					<li>Admininstratoren für Fachbereich ({router.query.subjectId})</li>
+					<li>{t("admins")}</li>
+					<li>
+						{t("admins_for_subject")} ({router.query.subjectId})
+					</li>
 				</ul>
 			</Unauthorized>
 		);
@@ -43,7 +47,7 @@ export default function SubjectManagementPage() {
 			<TopicHeader
 				imgUrlBanner={subject?.imgUrlBanner}
 				parentLink="/subjects"
-				parentTitle="Fachgebiet"
+				parentTitle={t("subject")}
 				title={subject.title}
 				subtitle={subject.subtitle}
 			>
@@ -52,14 +56,14 @@ export default function SubjectManagementPage() {
 					className="btn-primary absolute top-8 w-fit self-end"
 				>
 					<PencilIcon className="icon h-5" />
-					<span>Editieren</span>
+					<span>{t("edit")}</span>
 				</Link>
 			</TopicHeader>
 
 			<CenteredContainerXL>
 				<SectionHeader
-					title="Spezialisierungen"
-					subtitle="Spezialisierungen dieses Fachgebiets."
+					title={t("specializations")}
+					subtitle={t("specialization_for_subject")}
 				/>
 
 				<div className="mb-8 flex flex-wrap gap-4">
@@ -68,7 +72,7 @@ export default function SubjectManagementPage() {
 						href={`/teaching/subjects/${subject.subjectId}/create`}
 					>
 						<PlusIcon className="icon h-5" />
-						<span>Hinzufügen</span>
+						<span>{t("add")}</span>
 					</Link>
 
 					<button
@@ -77,7 +81,7 @@ export default function SubjectManagementPage() {
 						onClick={() => setOpenPermissionDialog(true)}
 					>
 						<UserGroupIcon className="icon h-5" />
-						<span>Autoren verwalten</span>
+						<span>{t("manage_authors")}</span>
 					</button>
 
 					{openPermissionDialog && (

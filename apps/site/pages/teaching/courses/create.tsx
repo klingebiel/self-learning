@@ -3,6 +3,7 @@ import { CourseEditor, CourseFormModel } from "@self-learning/teaching";
 import { showToast } from "@self-learning/ui/common";
 import { Unauthorized, useRequiredSession } from "@self-learning/ui/layouts";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 export default function CreateCoursePage() {
 	const { mutateAsync: createCourse } = trpc.course.create.useMutation();
@@ -12,6 +13,7 @@ export default function CreateCoursePage() {
 	const { subjectId } = router.query;
 	const session = useRequiredSession();
 	const author = session.data?.user.name;
+	const { t } = useTranslation();
 
 	async function onConfirm(course: CourseFormModel) {
 		try {
@@ -23,20 +25,20 @@ export default function CreateCoursePage() {
 				courseId: courseId
 			});
 
-			showToast({ type: "success", title: "Kurs erstellt!", subtitle: title });
+			showToast({ type: "success", title: t("course_created"), subtitle: title });
 			router.push(`/courses/${slug}`);
 		} catch (error) {
 			console.error(error);
 			showToast({
 				type: "error",
-				title: "Fehler",
+				title: t("error"),
 				subtitle: JSON.stringify(error, null, 2)
 			});
 		}
 	}
 
 	if (!author) {
-		return <Unauthorized>Um einen Kurs zu erstellen, musst du ein Autor sein.</Unauthorized>;
+		return <Unauthorized>{t("unauthorized")}</Unauthorized>;
 	}
 
 	return (

@@ -7,6 +7,11 @@ export const DropdownDialog = {
 export * from "./lib/author/author-chip";
 export * from "./lib/alert/alert";
 export * from "./lib/button/button";
+export * from "./lib/button/delete-button";
+export * from "./lib/button/add-button";
+export * from "./lib/button/edit-button";
+export * from "./lib/button/default-button";
+export * from "./lib/button/dropdown-button";
 export * from "./lib/chip/image-chip";
 export * from "./lib/collapsible/collapsible-box";
 export * from "./lib/chip/text-chip";

@@ -2,6 +2,8 @@ import { EditorField, LabeledField } from "@self-learning/ui/forms";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { QuestionTypeForm } from "../../base-question";
 import { ProgrammingQuestion } from "./schema";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 export default function ProgrammingForm({
 	question,
@@ -15,11 +17,10 @@ export default function ProgrammingForm({
 
 	const selectedMode = watch(`quiz.questions.${index}.custom.mode`);
 	const selectedLanguage = watch(`quiz.questions.${index}.language`);
+	const { t } = useTranslation();
 
 	function switchMode(mode: "standalone" | "callable") {
-		const confirmed = window.confirm(
-			"Modus ändern? Die bisherigen Einstellungen gehen möglicherweise verloren."
-		);
+		const confirmed = window.confirm(t("confirm_switch_mode_text"));
 
 		if (!confirmed) {
 			return;
@@ -58,7 +59,7 @@ export default function ProgrammingForm({
 			<Explainer />
 			<span className="flex flex-wrap gap-4">
 				<div>
-					<LabeledField label="Modus">
+					<LabeledField label={t("mode")}>
 						<select
 							value={selectedMode}
 							onChange={v => switchMode(v.target.value as "standalone" | "callable")}
@@ -71,7 +72,7 @@ export default function ProgrammingForm({
 				</div>
 
 				<div>
-					<LabeledField label="Programmiersprache">
+					<LabeledField label={t("programming_lang")}>
 						<Controller
 							control={control}
 							name={`quiz.questions.${index}.language`}
@@ -109,7 +110,7 @@ export default function ProgrammingForm({
 							></Controller>
 						</LabeledField>
 
-						<LabeledField label="Benötigte Ausgabe">
+						<LabeledField label={t("expected_output")}>
 							<Controller
 								control={control}
 								name={`quiz.questions.${index}.custom.expectedOutput`}
@@ -138,7 +139,7 @@ export default function ProgrammingForm({
 							></Controller>
 						</LabeledField>
 
-						<LabeledField label="Aufrufendes Programm">
+						<LabeledField label={t("executing_program")}>
 							<Controller
 								control={control}
 								name={`quiz.questions.${index}.custom.mainFile`}
@@ -160,24 +161,17 @@ export default function ProgrammingForm({
 }
 
 function Explainer() {
+	const { t } = useTranslation();
 	return (
 		<div className="flex flex-col gap-4">
-			<p className="text-sm text-light">
-				Programmieraufaben können in den folgenden Modi konfiguriert werden:
-			</p>
+			<p className="text-sm text-light">{t("explainer_text_1")}</p>
 
 			<ul className="text-sm text-light">
 				<li>
-					<span className="font-bold">standlone</span>: Der Student entwickelt das
-					vollstände Programm. Die Ausgabe des Programms wird mit einer vom Autor
-					vordefinierten Ausgabe verglichen, um die Korrektheit der Lösung zu ermitteln.
+					<span className="font-bold">standlone</span>: {t("explainer_text_2")}
 				</li>
 				<li>
-					<span className="font-bold">callable</span>: Der Autor schreibt ein Program, das
-					den Code des Studenten aufruft. Der Author implementiert zusätzlich eine
-					Musterlösung und ruft diese auf. Die Ausgaben beider Algorithmen müssen gemäß
-					dem TODO Schema erfolgen und werden verglichen, um die Korrektheit der Lösung zu
-					ermitteln.
+					<span className="font-bold">callable</span>: {t("explainer_text_3")}
 				</li>
 			</ul>
 		</div>
