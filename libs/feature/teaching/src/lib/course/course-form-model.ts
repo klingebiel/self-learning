@@ -21,14 +21,14 @@ export const courseFormSchema = z.object({
 	specializationId: z.string().nullable().optional()
 });
 
-export const extendedCourseFormSchema = z.object({
-	course: courseFormSchema,
-	courseTeachingGoals: z.array(skillFormSchema),
-	courseRequirements: z.array(skillFormSchema)
-});
+export const extendedCourseFormSchema = courseFormSchema.merge(
+	z.object({
+		courseTeachingGoals: z.array(skillFormSchema),
+		courseRequirements: z.array(skillFormSchema)
+	})
+);
 
-export type ExtendedCourseFormValues = {
-	course: CourseFormModel;
+export type ExtendedCourseFormValues = CourseFormModel & {
 	courseTeachingGoals: [];
 	courseRequirements: [];
 };
@@ -101,7 +101,7 @@ export function createEmptyCourseFormModel(): CourseFormModel {
 export function createEmptyExtendedCourseFormModel(): ExtendedCourseFormModel {
 	const emptyCourse = createEmptyCourseFormModel();
 	return {
-		course: emptyCourse,
+		...emptyCourse,
 		courseTeachingGoals: [],
 		courseRequirements: []
 	};
