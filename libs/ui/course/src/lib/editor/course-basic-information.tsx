@@ -52,15 +52,23 @@ function BasicInfo() {
 
 	const { slugifyField, slugifyIfEmpty } = useSlugify(form, "title", "slug");
 
-	let { data: subjects } = trpc.subject.getAllSubjects.useQuery();
-	if (!subjects) {
-		subjects = [];
-	}
+	const { data: subjects = [] } = trpc.subject.getAllSubjects.useQuery();
+	useEffect(() => {
+		if (subjects.length > 0) {
+			setValue("subjectId", subjects[0]?.subjectId || "");
+		} else {
+			console.error("Failed to fetch subjects from DB!");
+		}
+	}, [subjects, setValue]);
 
-	let { data: specializations } = trpc.specialization.getAll.useQuery();
-	if (!specializations) {
-		specializations = [];
-	}
+	const { data: specializations = [] } = trpc.specialization.getAll.useQuery();
+	useEffect(() => {
+		if (specializations.length > 0) {
+			setValue("specializationId", specializations[0]?.specializationId || "");
+		} else {
+			console.error("Failed to fetch specializations from DB!");
+		}
+	});
 
 	const onSubjectChange = (subjectId: string) => {
 		setValue("subjectId", subjectId);
