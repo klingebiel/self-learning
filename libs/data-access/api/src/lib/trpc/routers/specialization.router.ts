@@ -39,6 +39,14 @@ export const specializationRouter = t.router({
 				}
 			});
 		}),
+	getAll: authProcedure.query(() => {
+		return database.specialization.findMany({
+			select: {
+				specializationId: true,
+				title: true
+			}
+		});
+	}),
 	create: authProcedure
 		.input(
 			z.object({
