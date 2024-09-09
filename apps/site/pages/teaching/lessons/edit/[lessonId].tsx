@@ -8,6 +8,7 @@ import { showToast } from "@self-learning/ui/common";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 type EditLessonProps = {
 	lesson: LessonFormModel;
@@ -74,7 +75,7 @@ export const getServerSideProps: GetServerSideProps<EditLessonProps> = async ctx
 		subtitle: lesson.subtitle,
 		description: lesson.description,
 		imgUrl: lesson.imgUrl,
-		authors: lesson.authors.map(a => ({ username: a.username })),
+		authors: lesson.authors,
 		licenseId: lesson.licenseId,
 		requirements: lesson.requirements.map(r => ({
 			...r,
@@ -100,7 +101,16 @@ export const getServerSideProps: GetServerSideProps<EditLessonProps> = async ctx
 
 export default function EditLessonPage({ lesson }: EditLessonProps) {
 	const router = useRouter();
+	const [localLesson, setLocalLesson] = useState<LessonFormModel | null>(null);
 	const { mutateAsync: updateLesson } = trpc.lesson.edit.useMutation();
+	const { fromPreview } = router.query;
+
+	useEffect(() => {
+		const storedLesson = localStorage.getItem("lessonInEditing");
+		if (storedLesson && fromPreview) {
+			setLocalLesson(JSON.parse(storedLesson));
+		}
+	}, []);
 
 	async function onConfirm(updatedLesson: LessonFormModel) {
 		try {
@@ -114,7 +124,8 @@ export default function EditLessonPage({ lesson }: EditLessonProps) {
 				title: "Änderungen gespeichert!",
 				subtitle: result.title
 			});
-
+			// TODO remove lesson from local storage ?
+			localStorage.removeItem("lessonInEditing");
 			router.replace(router.asPath, undefined, { scroll: false });
 		} catch (error) {
 			showToast({
@@ -126,5 +137,7 @@ export default function EditLessonPage({ lesson }: EditLessonProps) {
 		}
 	}
 
-	return <LessonEditor lesson={lesson} onConfirm={onConfirm} />;
+	const lessonToEdit = localLesson || lesson;
+
+	return <LessonEditor lesson={lessonToEdit} onConfirm={onConfirm} />;
 }

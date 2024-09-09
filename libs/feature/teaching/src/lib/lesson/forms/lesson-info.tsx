@@ -13,18 +13,44 @@ import { Controller, useFormContext } from "react-hook-form";
 import { AuthorsForm } from "../../author/authors-form";
 import { LessonFormModel } from "../lesson-form-model";
 import { LessonType } from "@prisma/client";
-import { Dispatch } from "react";
+import { Dispatch, useEffect } from "react";
 import SkillForm from "./skills-form";
+import { useRouter } from "next/router";
 
-export function LessonInfoEditor({ setLessonType }: { setLessonType: Dispatch<LessonType> }) {
+export function LessonInfoEditor({
+	setLessonType,
+	lessonInEditing
+}: {
+	setLessonType: Dispatch<LessonType>;
+	lessonInEditing?: Partial<LessonFormModel>;
+}) {
 	const form = useFormContext<LessonFormModel>();
 	const {
 		register,
 		control,
-		formState: { errors }
+		formState: { errors },
+		setValue
 	} = form;
 
 	const { slugifyField, slugifyIfEmpty } = useSlugify(form, "title", "slug");
+
+	const router = useRouter();
+	const { query } = router;
+
+	useEffect(() => {
+		if (query["fromPreview"] === "true") {
+			if (typeof window !== "undefined") {
+				const storedData = localStorage.getItem("lessonInEditing");
+				if (storedData) {
+					const lessonData = JSON.parse(storedData);
+					setValue("title", lessonData.title);
+					setValue("slug", lessonData.slug);
+					setValue("subtitle", lessonData.subtitle);
+					setValue("lessonType", lessonData.lessonType);
+				}
+			}
+		}
+	}, [query, setValue]);
 
 	return (
 		<Form.SidebarSection>

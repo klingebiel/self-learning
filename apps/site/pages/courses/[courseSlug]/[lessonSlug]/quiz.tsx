@@ -20,13 +20,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type QuestionProps = LessonLayoutProps & {
+export type QuestionProps = LessonLayoutProps & {
 	quiz: Quiz;
 	markdown: {
 		questionsMd: MdLookup;
 		answersMd: MdLookup;
 		hintsMd: MdLookupArray;
 	};
+	isPreview?: boolean;
 };
 
 export const getServerSideProps: GetServerSideProps<QuestionProps> = async ({ params }) => {
@@ -77,7 +78,13 @@ export const getServerSideProps: GetServerSideProps<QuestionProps> = async ({ pa
 	};
 };
 
-export default function QuestionsPage({ course, lesson, quiz, markdown }: QuestionProps) {
+export default function QuestionsPage({
+	course,
+	lesson,
+	quiz,
+	markdown,
+	isPreview
+}: QuestionProps) {
 	const { questions, config } = quiz;
 	const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
 	const router = useRouter();
@@ -100,9 +107,14 @@ export default function QuestionsPage({ course, lesson, quiz, markdown }: Questi
 	// 		}
 	// 	);
 	// }
+	const { courseId, lessonId } = router.query;
 
 	function goToQuestion(index: number) {
-		router.push(`/courses/${course.slug}/${lesson.slug}/quiz?index=${index}`, undefined, {
+		let path = `/courses/${course.slug}/${lesson.slug}/quiz?index=${index}`;
+		if (isPreview) {
+			path = `/teaching/preview/${courseId}/${lessonId}/quiz?index=${index}`;
+		}
+		router.push(path, undefined, {
 			shallow: true
 		});
 	}

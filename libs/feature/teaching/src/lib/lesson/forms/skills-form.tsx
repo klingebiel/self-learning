@@ -8,6 +8,7 @@ import { SelectSkillDialog } from "../../skills/skill-dialog/select-skill-dialog
 import { useFormContext } from "react-hook-form";
 import { LessonFormModel } from "../lesson-form-model";
 import { SelectSkillsView } from "../../skills/skill-dialog/select-skill-view";
+import { useRouter } from "next/router";
 
 type SkillModalIdentifier = "teachingGoals" | "requirements";
 
@@ -40,6 +41,43 @@ export default function SkillForm() {
 			watchingSkills[id].filter(s => s.id !== skill.id)
 		);
 	};
+
+	const router = useRouter();
+	const { query } = router;
+	const [skillsFromPreview, setSkillsFromPreview] = useState<{
+		teachingGoals: SkillFormModel[];
+		requirements: SkillFormModel[];
+	}>({ teachingGoals: [], requirements: [] });
+
+	useEffect(() => {
+		if (query["fromPreview"] === "true") {
+			if (typeof window !== "undefined") {
+				const storedData = localStorage.getItem("lessonInEditing");
+				if (storedData) {
+					const lessonInEditing = JSON.parse(storedData);
+					const teachingGoalsFromPreview = lessonInEditing.teachingGoals
+						? lessonInEditing.teachingGoals
+						: [];
+					const requirementsFromPreview = lessonInEditing.requirements
+						? lessonInEditing.requirements
+						: [];
+					setSkillsFromPreview({
+						teachingGoals: teachingGoalsFromPreview,
+						requirements: requirementsFromPreview
+					});
+				}
+			}
+		}
+	}, [query]);
+
+	useEffect(() => {
+		if (query["fromPreview"] === "true") {
+			if (typeof window !== "undefined") {
+				setValue("teachingGoals", skillsFromPreview.teachingGoals);
+				setValue("requirements", skillsFromPreview.requirements);
+			}
+		}
+	}, [skillsFromPreview]);
 
 	return (
 		<Form.SidebarSection>

@@ -10,7 +10,8 @@ import { Divider, RemovableTab, SectionHeader, Tabs } from "@self-learning/ui/co
 import { LabeledField, MarkdownField } from "@self-learning/ui/forms";
 import { getRandomId } from "@self-learning/util/common";
 import { Reorder } from "framer-motion";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { Control, Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 type QuizForm = { quiz: Quiz };
@@ -80,6 +81,30 @@ export function QuizEditor() {
 		appendQuestion,
 		removeQuestion
 	} = useQuizEditorForm();
+
+	const router = useRouter();
+	const { query } = router;
+	const [quizFromPreview, setQuizFromPreview] = useState<Quiz>({ config: null, questions: [] });
+
+	useEffect(() => {
+		if (query["fromPreview"] === "true") {
+			if (typeof window !== "undefined") {
+				const storedData = localStorage.getItem("lessonInEditing");
+				if (storedData) {
+					const lessonInEditing = JSON.parse(storedData);
+					if (lessonInEditing.quiz) {
+						setQuizFromPreview(lessonInEditing.quiz);
+					}
+				}
+			}
+		}
+	}, [query]);
+
+	useEffect(() => {
+		if (query["fromPreview"] === "true") {
+			setQuiz(quizFromPreview.questions);
+		}
+	}, [quizFromPreview]);
 
 	return (
 		<section className="flex flex-col gap-8">
@@ -168,7 +193,7 @@ function QuizConfigForm() {
 						},
 						maxErrors: 0,
 						showSolution: false
-				  }
+					}
 		);
 	}
 

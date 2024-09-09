@@ -14,6 +14,7 @@ import { ArticleInput } from "../content-types/article";
 import { IFrameInput } from "../content-types/iframe";
 import { PdfInput } from "../content-types/pdf";
 import { VideoInput } from "../content-types/video";
+import { useRouter } from "next/router";
 
 export type SetValueFn = <CType extends LessonContentType["type"]>(
 	type: CType,
@@ -129,6 +130,31 @@ export function LessonContentEditor() {
 		setContentTabIndex,
 		typesWithUsage
 	} = useLessonContentEditor(control);
+
+	const router = useRouter();
+	const { query } = router;
+	const [contentFromPreview, setContentFromPreview] = useState([]);
+
+	useEffect(() => {
+		if (query["fromPreview"] === "true") {
+			if (typeof window !== "undefined") {
+				const storedData = localStorage.getItem("lessonInEditing");
+				if (storedData) {
+					const lessonInEditing = JSON.parse(storedData);
+					const contentFromPreview = lessonInEditing.content
+						? lessonInEditing.content
+						: [];
+					setContentFromPreview(contentFromPreview);
+				}
+			}
+		}
+	}, [query]);
+
+	useEffect(() => {
+		if (query["fromPreview"] === "true") {
+			setContent(contentFromPreview);
+		}
+	}, [contentFromPreview]);
 
 	return (
 		<section>

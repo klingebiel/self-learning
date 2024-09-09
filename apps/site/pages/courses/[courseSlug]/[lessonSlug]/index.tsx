@@ -33,6 +33,7 @@ export type LessonProps = LessonLayoutProps & {
 		preQuestion: CompiledMarkdown | null;
 		subtitle: CompiledMarkdown | null;
 	};
+	isPreview?: boolean;
 };
 
 export const getServerSideProps: GetServerSideProps<LessonProps> = async ({ params }) => {
@@ -91,29 +92,32 @@ function usePreferredMediaType(lesson: LessonProps["lesson"]) {
 		content.length > 0 ? content[0].type : null
 	);
 
-	if (content.length > 0) {
-		const availableMediaTypes = content.map(c => c.type);
+	useEffect(() => {
+		if (content.length > 0) {
+			const availableMediaTypes = content.map(c => c.type);
 
-		const { type: typeFromRoute } = router.query;
-		let typeFromStorage: string | null = null;
+			const { type: typeFromRoute } = router.query;
+			let typeFromStorage: string | null = null;
 
-		if (typeof window !== "undefined") {
-			typeFromStorage = window.localStorage.getItem("preferredMediaType");
+			if (typeof window !== "undefined") {
+				typeFromStorage = window.localStorage.getItem("preferredMediaType");
+			}
+
+			const { isIncluded, type } = includesMediaType(
+				availableMediaTypes,
+				(typeFromRoute as string) ?? typeFromStorage
+			);
+
+			if (isIncluded) {
+				setPreferredMediaType(type);
+			}
 		}
+	}, [content, router.query]);
 
-		const { isIncluded, type } = includesMediaType(
-			availableMediaTypes,
-			(typeFromRoute as string) ?? typeFromStorage
-		);
-
-		if (isIncluded) {
-			setPreferredMediaType(type);
-		}
-	}
 	return preferredMediaType;
 }
 
-export default function Lesson({ lesson, course, markdown }: LessonProps) {
+export default function Lesson({ lesson, course, markdown, isPreview }: LessonProps) {
 	const [showDialog, setShowDialog] = useState(lesson.lessonType === LessonType.SELF_REGULATED);
 
 	const { content: video } = findContentType("video", lesson.content as LessonContent);
@@ -149,6 +153,7 @@ export default function Lesson({ lesson, course, markdown }: LessonProps) {
 				course={course}
 				mdDescription={markdown.description}
 				mdSubtitle={markdown.subtitle}
+				isPreview={isPreview}
 			/>
 
 			{preferredMediaType === "article" && markdown.article && (
@@ -172,12 +177,14 @@ function LessonHeader({
 	course,
 	lesson,
 	mdDescription,
-	mdSubtitle
+	mdSubtitle,
+	isPreview
 }: {
 	course: LessonProps["course"];
 	lesson: LessonProps["lesson"];
 	mdDescription?: CompiledMarkdown | null;
 	mdSubtitle?: CompiledMarkdown | null;
+	isPreview?: boolean;
 }) {
 	const { chapterName } = useLessonContext(lesson.lessonId, course.slug);
 
@@ -190,7 +197,7 @@ function LessonHeader({
 							<span className="font-semibold text-secondary">{chapterName}</span>
 							<h1 className="text-4xl">{lesson.title}</h1>
 						</span>
-						<LessonControls course={course} lesson={lesson} />
+						<LessonControls course={course} lesson={lesson} isPreview={isPreview} />
 					</span>
 					{mdSubtitle && (
 						<MarkdownContainer className="mt-2 text-light">
@@ -212,7 +219,7 @@ function LessonHeader({
 					</span>
 
 					<div className="pt-4">
-						<MediaTypeSelector lesson={lesson} course={course} />
+						<MediaTypeSelector lesson={lesson} course={course} isPreview={isPreview} />
 					</div>
 				</div>
 			</div>
@@ -258,21 +265,33 @@ function LicenseLabel({ license }: { license: NonNullable<LessonProps["lesson"][
 
 function LessonControls({
 	course,
-	lesson
+	lesson,
+	isPreview
 }: {
 	course: LessonProps["course"];
 	lesson: LessonProps["lesson"];
+	isPreview?: boolean;
 }) {
 	const markAsCompleted = useMarkAsCompleted(lesson.lessonId, course.slug);
 	const completion = useCourseCompletion(course.slug);
 	const isCompletedLesson = !!completion?.completedLessons[lesson.lessonId];
 	const hasQuiz = (lesson.meta as LessonMeta).hasQuiz;
 
+	const router = useRouter();
+	const { courseId } = router.query;
+
+	let path = `/courses/${course.slug}/${lesson.slug}/quiz`;
+	if (isPreview) {
+		const courseIdPart = courseId ? courseId : "placeholder";
+		const lessonIdPart = lesson.lessonId ? lesson.lessonId : "placeholder";
+		path = `/teaching/preview/${courseIdPart}/${lessonIdPart}/quiz?title=${lesson.title}`;
+	}
+
 	return (
 		<div className="flex w-full flex-wrap gap-2 xl:w-fit xl:flex-row">
 			{hasQuiz && (
 				<Link
-					href={`/courses/${course.slug}/${lesson.slug}/quiz`}
+					href={path}
 					className="btn-primary flex h-fit w-full flex-wrap-reverse text-sm xl:w-fit"
 					data-testid="quizLink"
 				>
@@ -308,10 +327,12 @@ function Authors({ authors }: { authors: LessonProps["lesson"]["authors"] }) {
 
 function MediaTypeSelector({
 	lesson,
-	course
+	course,
+	isPreview
 }: {
 	course: LessonProps["course"];
 	lesson: LessonProps["lesson"];
+	isPreview?: boolean;
 }) {
 	const lessonContent = lesson.content as LessonContent;
 	// If no content is specified at this time, use video as default (and don't s´display anything)
@@ -319,13 +340,18 @@ function MediaTypeSelector({
 	const { index } = findContentType(preferredMediaType, lessonContent);
 	const [selectedIndex, setSelectedIndex] = useState(index);
 	const router = useRouter();
+	const { courseId } = router.query;
 
 	function changeMediaType(index: number) {
 		const type = lessonContent[index].type;
 
 		window.localStorage.setItem("preferredMediaType", type);
+		let path = `/courses/${course.slug}/${lesson.slug}?type=${type}`;
 
-		router.push(`/courses/${course.slug}/${lesson.slug}?type=${type}`, undefined, {
+		if (isPreview) {
+			path = `/teaching/preview/${courseId}/${lesson.slug}`;
+		}
+		router.push(path, undefined, {
 			shallow: true
 		});
 

@@ -4,7 +4,7 @@ import { Dialog, DialogActions, OnDialogCloseFn, Tab, Tabs } from "@self-learnin
 import { LabeledField, MarkdownEditorDialog, MarkdownField } from "@self-learning/ui/forms";
 import { useRequiredSession } from "@self-learning/ui/layouts";
 import { SidebarSectionTitle } from "libs/ui/forms/src/lib/form-container";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
 import { AuthorsForm } from "../../../author/authors-form";
 import { OpenAsJsonButton } from "../../../json-editor-dialog";
@@ -12,6 +12,7 @@ import { LessonContentEditor } from "../../../lesson/forms/lesson-content";
 import { QuizEditor } from "../../../lesson/forms/quiz-editor";
 import { LessonFormModel } from "../../../lesson/lesson-form-model";
 import { slugify } from "@self-learning/util/common";
+import { useRouter } from "next/router";
 
 export function EditLessonDialog({
 	onClose,
@@ -37,6 +38,16 @@ export function EditLessonDialog({
 		},
 		resolver: zodResolver(lessonSchema)
 	});
+
+	const router = useRouter();
+	const { courseId } = router.query;
+	const [courseIdValue, setCourseId] = useState("placeholder"); // TODO this type of name should be probably defined somewhere global
+
+	useEffect(() => {
+		if (courseId && typeof courseId === "string") {
+			setCourseId(courseId);
+		}
+	}, [courseId]);
 
 	if (initialLesson?.lessonId && !canEdit) {
 		return (
@@ -81,7 +92,7 @@ export function EditLessonDialog({
 							className="btn-stroked"
 							target="_blank"
 							rel="noreferrer"
-							href={`/teaching/lessons/edit/${initialLesson?.lessonId}`}
+							href={`/teaching/lessons/edit/${initialLesson?.lessonId}?courseId=${courseIdValue}`}
 							title="Formular in einem neuen Tab öffnen. Änderungen werden nicht übernommen."
 						>
 							Im separaten Editor öffnen

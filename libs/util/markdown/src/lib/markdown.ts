@@ -39,7 +39,8 @@ export function compileMarkdown(markdown: string) {
 		mdxOptions: {
 			format: "md",
 			remarkPlugins,
-			rehypePlugins
+			rehypePlugins,
+			development: true
 		}
 	});
 }

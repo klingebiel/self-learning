@@ -16,9 +16,20 @@ export type LessonLayoutProps = {
 
 type LessonInfo = { lessonId: string; slug: string; title: string; meta: LessonMeta };
 
-function getCourse(slug: string) {
+export function getCourse(slug: string) {
 	return database.course.findUnique({
 		where: { slug },
+		select: {
+			courseId: true,
+			title: true,
+			slug: true
+		}
+	});
+}
+
+export function getCourseById(courseId: string) {
+	return database.course.findUnique({
+		where: { courseId },
 		select: {
 			courseId: true,
 			title: true,

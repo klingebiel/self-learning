@@ -43,6 +43,17 @@ type PlaylistProps = {
 	completion?: CourseCompletion;
 };
 
+function getIsLessonInEditing(title: string, lessonId: string, content: PlaylistContent) {
+	for (const chapter of content) {
+		for (const lesson of chapter.content) {
+			if (lesson.lessonId === lessonId && lesson.title !== title) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 export function Playlist({ content, course, lesson, completion }: PlaylistProps) {
 	const [contentWithCompletion, setContentWithCompletion] = useState(content);
 
@@ -60,6 +71,12 @@ export function Playlist({ content, course, lesson, completion }: PlaylistProps)
 		setContentWithCompletion([...content]);
 	}, [completion, content]);
 
+	const isLessonInEditing: boolean = getIsLessonInEditing(
+		lesson.title,
+		lesson.lessonId,
+		contentWithCompletion
+	);
+
 	return (
 		<>
 			<PlaylistHeader
@@ -75,6 +92,11 @@ export function Playlist({ content, course, lesson, completion }: PlaylistProps)
 						chapter={chapter}
 						course={course}
 						activeLessonId={lesson.lessonId}
+						lessonInEditingInfo={
+							isLessonInEditing
+								? { id: lesson.lessonId, newTitle: lesson.title }
+								: undefined
+						}
 					/>
 				))}
 			</div>
@@ -85,11 +107,13 @@ export function Playlist({ content, course, lesson, completion }: PlaylistProps)
 function Chapter({
 	chapter,
 	activeLessonId,
-	course
+	course,
+	lessonInEditingInfo
 }: {
 	chapter: PlaylistChapter;
 	activeLessonId: string;
 	course: PlaylistProps["course"];
+	lessonInEditingInfo?: { id: string; newTitle: string };
 }) {
 	const [collapsed, setCollapsed] = useState(false);
 
@@ -115,6 +139,9 @@ function Chapter({
 							lesson={x}
 							href={`/courses/${course.slug}/${x.slug}`}
 							isActive={activeLessonId === x.lessonId}
+							lessonInEditingInfo={
+								lessonInEditingInfo ? lessonInEditingInfo : undefined
+							}
 						/>
 					))}
 				</ul>
@@ -126,12 +153,21 @@ function Chapter({
 function Lesson({
 	lesson,
 	href,
-	isActive
+	isActive,
+	lessonInEditingInfo
 }: {
 	lesson: PlaylistLesson;
 	href: string;
 	isActive: boolean;
+	lessonInEditingInfo?: { id: string; newTitle: string };
 }) {
+	let title = lesson.title;
+	if (lessonInEditingInfo) {
+		if (lesson.lessonId === lessonInEditingInfo.id) {
+			title = lessonInEditingInfo.newTitle;
+		}
+	}
+
 	return (
 		<Link
 			href={href}
@@ -149,7 +185,7 @@ function Lesson({
 				className="overflow-hidden text-ellipsis whitespace-nowrap pl-4 text-sm"
 				data-testid="lessonTitle"
 			>
-				{lesson.title}
+				{title}
 			</span>
 		</Link>
 	);
