@@ -1,126 +1,54 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@self-learning/admin": [
-        "libs/feature/admin/src/index.ts"
-      ],
-      "@self-learning/analysis": [
-        "libs/feature/analysis/src/index.ts"
-      ],
-      "@self-learning/api": [
-        "libs/data-access/api/src/index.ts"
-      ],
-      "@self-learning/api-client": [
-        "libs/data-access/api-client/src/index.ts"
-      ],
-      "@self-learning/cms-api": [
-        "libs/data-access/cms-api/src/index.ts"
-      ],
-      "@self-learning/completion": [
-        "libs/feature/completion/src/index.ts"
-      ],
-      "@self-learning/database": [
-        "libs/data-access/database/src/index.ts"
-      ],
-      "@self-learning/diary": [
-        "libs/feature/diary/src/index.ts"
-      ],
-      "@self-learning/diary/server": [
-        "libs/feature/diary/src/server.ts"
-      ],
-      "@self-learning/enrollment": [
-        "libs/feature/enrollment/src/index.ts"
-      ],
-      "@self-learning/lesson": [
-        "libs/feature/lesson/src/index.ts"
-      ],
-      "@self-learning/lia-exporter": [
-        "libs/util/lia-exporter/src/index.ts"
-      ],
-      "@self-learning/markdown": [
-        "libs/util/markdown/src/index.ts"
-      ],
-      "@self-learning/question-types": [
-        "libs/feature/question-types/src/index.ts"
-      ],
-      "@self-learning/quiz": [
-        "libs/feature/quiz/src/index.ts"
-      ],
-      "@self-learning/settings": [
-        "libs/feature/settings/src/index.ts"
-      ],
-      "@self-learning/teaching": [
-        "libs/feature/teaching/src/index.ts"
-      ],
-      "@self-learning/types": [
-        "libs/util/types/src/index.ts"
-      ],
-      "@self-learning/ui/common": [
-        "libs/ui/common/src/index.ts"
-      ],
-      "@self-learning/ui/course": [
-        "libs/ui/course/src/index.ts"
-      ],
-      "@self-learning/ui/forms": [
-        "libs/ui/forms/src/index.ts"
-      ],
-      "@self-learning/ui/layouts": [
-        "libs/ui/layouts/src/index.ts"
-      ],
-      "@self-learning/ui/lesson": [
-        "libs/ui/lesson/src/index.ts"
-      ],
-      "@self-learning/ui/notifications": [
-        "libs/ui/notifications/src/index.ts"
-      ],
-      "@self-learning/ui/notifications/server": [
-        "libs/ui/notifications/src/server.ts"
-      ],
-      "@self-learning/ui/static": [
-        "libs/ui/static/src/index.ts"
-      ],
-      "@self-learning/ui/static/server": [
-        "libs/ui/static/src/server.ts"
-      ],
-      "@self-learning/util/common": [
-        "libs/util/common/src/index.ts"
-      ],
-      "@self-learning/util/http": [
-        "libs/util/http/src/index.ts"
-      ],
-      "@self-learning/util/testing": [
-        "libs/util/testing/src/index.ts"
-      ],
-      "@self-learning/util/validate": [
-        "libs/util/validation/src/index.ts"
-      ],
-      "@self-learning/webhooks": [
-        "libs/feature/webhooks/src/index.ts"
-      ],
-      "settings": [
-        "libs/feature/settings/src/index.ts"
-      ]
-    }
-  },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+	"compileOnSave": false,
+	"compilerOptions": {
+		"rootDir": ".",
+		"sourceMap": true,
+		"declaration": false,
+		"moduleResolution": "node",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"importHelpers": true,
+		"target": "es2015",
+		"module": "esnext",
+		"lib": ["es2017", "dom"],
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
+		"baseUrl": ".",
+		"paths": {
+			"@self-learning/admin": ["libs/feature/admin/src/index.ts"],
+			"@self-learning/analysis": ["libs/feature/analysis/src/index.ts"],
+			"@self-learning/api": ["libs/data-access/api/src/index.ts"],
+			"@self-learning/api-client": ["libs/data-access/api-client/src/index.ts"],
+			"@self-learning/cms-api": ["libs/data-access/cms-api/src/index.ts"],
+			"@self-learning/completion": ["libs/feature/completion/src/index.ts"],
+			"@self-learning/database": ["libs/data-access/database/src/index.ts"],
+			"@self-learning/diary": ["libs/feature/diary/src/index.ts"],
+			"@self-learning/diary/server": ["libs/feature/diary/src/server.ts"],
+			"@self-learning/enrollment": ["libs/feature/enrollment/src/index.ts"],
+			"@self-learning/lesson": ["libs/feature/lesson/src/index.ts"],
+			"@self-learning/lia-exporter": ["libs/util/lia-exporter/src/index.ts"],
+			"@self-learning/markdown": ["libs/util/markdown/src/index.ts"],
+			"@self-learning/question-types": ["libs/feature/question-types/src/index.ts"],
+			"@self-learning/quiz": ["libs/feature/quiz/src/index.ts"],
+			"@self-learning/settings": ["libs/feature/settings/src/index.ts"],
+			"@self-learning/teaching": ["libs/feature/teaching/src/index.ts"],
+			"@self-learning/types": ["libs/util/types/src/index.ts"],
+			"@self-learning/ui/common": ["libs/ui/common/src/index.ts"],
+			"@self-learning/ui/course": ["libs/ui/course/src/index.ts"],
+			"@self-learning/ui/forms": ["libs/ui/forms/src/index.ts"],
+			"@self-learning/ui/layouts": ["libs/ui/layouts/src/index.ts"],
+			"@self-learning/ui/lesson": ["libs/ui/lesson/src/index.ts"],
+			"@self-learning/ui/notifications": ["libs/ui/notifications/src/index.ts"],
+			"@self-learning/ui/notifications/server": ["libs/ui/notifications/src/server.ts"],
+			"@self-learning/ui/static": ["libs/ui/static/src/index.ts"],
+			"@self-learning/ui/static/server": ["libs/ui/static/src/server.ts"],
+			"@self-learning/util/common": ["libs/util/common/src/index.ts"],
+			"@self-learning/util/http": ["libs/util/http/src/index.ts"],
+			"@self-learning/util/testing": ["libs/util/testing/src/index.ts"],
+			"@self-learning/util/validate": ["libs/util/validation/src/index.ts"],
+			"@self-learning/webhooks": ["libs/feature/webhooks/src/index.ts"],
+			"settings": ["libs/feature/settings/src/index.ts"]
+		}
+	},
+	"exclude": ["node_modules", "tmp"]
 }

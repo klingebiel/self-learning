@@ -1,0 +1,28 @@
+.explanationPopup {
+	position: absolute;
+	padding: 10px;
+	border-radius: 5px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+	white-space: nowrap;
+	z-index: 1000;
+	animation:
+		fadeIn 0.5s,
+		fadeOut 0.5s 4.5s; /* Adjust timing as needed */
+	background: #333;
+	color: #fff;
+	border: 2px solid transparent;
+	background-clip: padding-box;
+	position: relative;
+}
+
+.explanationPopup::before {
+	content: "";
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	right: -2px;
+	bottom: -2px;
+	background: linear-gradient(45deg, gold, goldenrod);
+	border-radius: 7px; /* Adjust to match the border-radius of the popup */
+	z-index: -1;
+}

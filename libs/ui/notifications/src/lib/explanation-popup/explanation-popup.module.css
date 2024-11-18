@@ -1,0 +1,45 @@
+.explanationPopupTop {
+	top: -40px; /* Adjust as needed */
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.explanationPopupBottom {
+	bottom: -40px; /* Adjust as needed */
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.explanationPopupLeft {
+	left: -150px; /* Adjust as needed */
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.explanationPopupRight {
+	right: -150px; /* Adjust as needed */
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+}
