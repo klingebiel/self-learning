@@ -1,4 +1,4 @@
-import { SkillFormModel } from "@self-learning/types";
+import { SkillFormModel, SkillRepositoryTreeNodeModel } from "@self-learning/types";
 import {
 	ButtonActions,
 	dispatchDialog,
@@ -10,7 +10,7 @@ import {
 } from "@self-learning/ui/common";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { FolderPlusIcon } from "@heroicons/react/24/outline";
-import { SkillSelectHandler, UpdateVisuals } from "./skill-display";
+import { isSkillFormModel, SkillSelectHandler, UpdateVisuals } from "./skill-display";
 import { trpc } from "@self-learning/api-client";
 import { Skill } from "@prisma/client";
 
@@ -36,44 +36,61 @@ const withErrorHandling = async (fn: () => Promise<void>) => {
 
 export function AddChildButton({
 	parentSkill,
+	childrenNumber,
 	updateSkillDisplay,
 	handleSelection,
 	skillDefaults
 }: {
-	parentSkill: SkillFormModel;
+	parentSkill: SkillRepositoryTreeNodeModel;
+	childrenNumber: number;
 	updateSkillDisplay: UpdateVisuals;
 	handleSelection: SkillSelectHandler;
 	skillDefaults?: Partial<Skill>;
 }) {
 	const { mutateAsync: addSkillOnParent } = trpc.skill.createSkillWithParents.useMutation();
+	const { mutateAsync: createNewSkill } = trpc.skill.createSkill.useMutation();
+
 	const newSkill = {
-		name: `${parentSkill.children.length + 1}. Kind - ${parentSkill.name}`,
+		name: `${childrenNumber + 1}. Kind - ${parentSkill.name}`,
 		description: "Add here",
 		children: [],
-		parents: [parentSkill.id],
-		repositoryId: parentSkill.repositoryId,
+		parents: isSkillFormModel(parentSkill) ? [parentSkill.id] : [],
+		repositoryId: isSkillFormModel(parentSkill) ? parentSkill.repositoryId : parentSkill.id,
 		...skillDefaults
 	};
 	const handleAddSkill = async () =>
 		await withErrorHandling(async () => {
-			const result = await addSkillOnParent({
-				repoId: parentSkill.repositoryId,
-				parentSkillId: parentSkill.id,
-				skill: newSkill
-			});
-			if (result) {
-				const { createdSkill, parentSkill } = result;
-				updateSkillDisplay([
-					{ id: createdSkill.id, shortHighlight: true },
-					{
-						id: parentSkill.id,
-						shortHighlight: true,
-						isExpanded: true
-					}
-				]);
-				handleSelection(createdSkill.id);
+			if (isSkillFormModel(parentSkill)) {
+				const result = await addSkillOnParent({
+					repoId: parentSkill.repositoryId,
+					parentSkillId: parentSkill.id,
+					skill: newSkill
+				});
+				if (result) {
+					const { createdSkill, parentSkill } = result;
+					updateSkillDisplay([
+						{ id: createdSkill.id, shortHighlight: true },
+						{
+							id: parentSkill.id,
+							shortHighlight: true,
+							isExpanded: true
+						}
+					]);
+					handleSelection(createdSkill.id);
+				} else {
+					throw new Error("Could not create skill");
+				}
 			} else {
-				throw new Error("Could not create skill");
+				const result = await createNewSkill({
+					repoId: parentSkill.id,
+					skill: newSkill
+				});
+				if (result) {
+					updateSkillDisplay([{ id: result.id, shortHighlight: true }]);
+					handleSelection(result.id);
+				} else {
+					throw new Error("Could not create skill");
+				}
 			}
 		});
 

@@ -2,15 +2,20 @@ import { TableDataColumn } from "@self-learning/ui/common";
 import React from "react";
 import {
 	ChevronDownIcon,
-	ChevronRightIcon,
 	FolderIcon,
 	ArrowPathRoundedSquareIcon,
-	ShieldExclamationIcon
+	ShieldExclamationIcon,
+	CircleStackIcon
 } from "@heroicons/react/24/solid";
 import { PencilIcon, PuzzlePieceIcon } from "@heroicons/react/24/outline";
-import { AddChildButton, SkillDeleteOption } from "./skill-taskbar";
+import { AddChildButton } from "./skill-taskbar";
 import styles from "./folder-table.module.css";
-import { SkillFolderVisualization, SkillSelectHandler, UpdateVisuals } from "./skill-display";
+import {
+	isSkillFormModel,
+	SkillFolderVisualization,
+	SkillSelectHandler,
+	UpdateVisuals
+} from "./skill-display";
 import { isTruthy } from "@self-learning/util/common";
 
 export function ListSkillEntryWithChildren({
@@ -41,8 +46,9 @@ export function ListSkillEntryWithChildren({
 				updateSkillDisplay={updateSkillDisplay}
 			/>
 			{showChildren &&
-				skillDisplayData.skill.children
+				skillDisplayData.children
 					.map(childId => skillResolver(childId))
+					.sort(byChildrenLength)
 					.filter(isTruthy)
 					.filter(wasNotRendered)
 					.map(element => {
@@ -65,6 +71,16 @@ export function ListSkillEntryWithChildren({
 	);
 }
 
+const byChildrenLength = (
+	a: SkillFolderVisualization | undefined,
+	b: SkillFolderVisualization | undefined
+) => {
+	if (a && b) {
+		return b.numberChildren - a.numberChildren || a.skill.name.localeCompare(b.skill.name);
+	}
+	return 0;
+};
+
 function SkillRow({
 	skill,
 	depth,
@@ -81,7 +97,7 @@ function SkillRow({
 	} as React.CSSProperties;
 	const onOpen = () => {
 		// disables highlight effect after user interacted with the element
-		const childrenDisplays = skill.skill.children.map(cid => ({
+		const childrenDisplays = skill.children.map(cid => ({
 			id: cid,
 			shortHighlight: false
 		}));
@@ -107,13 +123,13 @@ function SkillRow({
 				${cycleWarning ? "bg-yellow-100" : ""}
 				${skill.isSelected ? "bg-gray-200" : ""} `}
 		>
-			<TableDataColumn className={"text-center align-middle"}>
+			{/* <TableDataColumn className={"text-center align-middle"}>
 				<input
 					className="secondary form-checkbox rounded text-secondary focus:ring-secondary"
 					type="checkbox"
 					defaultChecked={false} // TODO mass select
 				/>
-			</TableDataColumn>
+			</TableDataColumn> */}
 
 			<TableDataColumn
 				className={`${styles["folder-line"]} ${
@@ -123,28 +139,29 @@ function SkillRow({
 				<div className={`flex px-2`}>
 					<div
 						className={`flex ${skill.isFolder && "hover:text-secondary"}`}
-						onClick={onOpen}
+						onClick={() => handleSelection(skill.id)}
 					>
 						<div className="flex px-3">
 							{skill.isFolder ? (
 								<>
 									<div className="mr-1">
 										{skill.isExpanded ? (
-											<ChevronDownIcon className=" icon h-5 text-lg" />
+											<ChevronDownIcon
+												className=" icon h-5 text-lg"
+												onClickCapture={() => onOpen()}
+											/>
 										) : (
-											<ChevronRightIcon className="icon h-5 text-lg" />
+											<ChevronDownIcon
+												className="icon h-5 text-lg"
+												onClickCapture={() => onOpen()}
+											/>
 										)}
 									</div>
-									<IconWithNumber
-										number={skill.skill.children.length}
-										style={{
-											color: "white",
-											// fontWeight: "bold",
-											fontSize: "10px"
-										}}
-									>
+									{skill.isRepository ? (
+										<CircleStackIcon className="icon h-5 text-lg" />
+									) : (
 										<FolderIcon className="icon h-5 text-lg" />
-									</IconWithNumber>
+									)}
 								</>
 							) : (
 								<div className="ml-6">
@@ -161,20 +178,24 @@ function SkillRow({
 						<span className={`${skill.isSelected ? "text-secondary" : ""}`}>
 							{skill.displayName ?? skill.skill.name}
 						</span>
-						<span className="ml-1 text-xs text-gray-500">{skill.skill.id}</span>
+						{/* <span className="ml-1 text-xs text-gray-500">{skill.skill.id}</span> */}
 					</div>
 					<div className="invisible  group-hover:visible">
-						<QuickEditButton onClick={() => handleSelection(skill.id)} skill={skill} />
+						{/* <QuickEditButton onClick={() => handleSelection(skill.id)} skill={skill} /> */}
 						<AddChildButton
 							parentSkill={skill.skill}
+							childrenNumber={skill.numberChildren}
 							updateSkillDisplay={updateSkillDisplay}
 							handleSelection={handleSelection}
 						/>
-						<SkillDeleteOption skillIds={[skill.id]} inline={true} />
+						{/* <SkillDeleteOption
+							skillIds={[skill.id]}
+							className="px-2 hover:text-secondary"
+						/> */}
 					</div>
 				</div>
 			</TableDataColumn>
-			<TableDataColumn>{"nicht vorhanden"}</TableDataColumn>
+			{/* <TableDataColumn>{"nicht vorhanden"}</TableDataColumn> */}
 		</tr>
 	);
 }

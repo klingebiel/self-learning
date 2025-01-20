@@ -134,8 +134,7 @@ export function SkillInfoForm({
 						</button>
 						<SkillDeleteOption
 							skillIds={[skill.id]}
-							onDeleteSuccess={resetEditTarget}
-							inline={false}
+							//onDeleteSuccess={resetEditTarget}
 						/>
 					</div>
 				</Form.SidebarSection>
@@ -167,13 +166,14 @@ function SkillToSkillDepsInfo({
 		setChildItems(children);
 	}, [children]);
 
-	const removeParent = (id: string) => {
-		setParentItems(parentItems.filter(item => item.id !== id));
-		skillToChange.parents = skillToChange.parents.filter(item => item !== id);
-	};
 	const removeChild = (id: string) => {
 		setChildItems(childItems.filter(item => item.id !== id));
 		skillToChange.children = skillToChange.children.filter(item => item !== id);
+	};
+
+	const removeParent = (id: string) => {
+		setParentItems(parentItems.filter(item => item.id !== id));
+		skillToChange.parents = skillToChange.parents.filter(item => item !== id);
 	};
 
 	const addChildren = (skills: SkillFormModel[]) => {

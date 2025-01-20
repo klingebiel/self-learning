@@ -14,6 +14,7 @@ export const skillFormSchema = skillCreationFormSchema.extend({
 	repositoryId: z.string(),
 	parents: z.array(z.string())
 });
+
 export type SkillFormModel = z.infer<typeof skillFormSchema>;
 
 export const skillRepositoryCreationSchema = z.object({
@@ -21,6 +22,7 @@ export const skillRepositoryCreationSchema = z.object({
 	name: z.string(),
 	description: z.string().nullable()
 });
+
 export type SkillRepositoryCreationModel = z.infer<typeof skillRepositoryCreationSchema>;
 
 export const skillRepositorySchema = skillRepositoryCreationSchema.extend({
@@ -39,3 +41,5 @@ export const createSkillFormModelFromSkillResolved = (skill: SkillResolved): Ski
 		parents: skill.parents.map(parent => parent.id)
 	};
 };
+z;
+export type SkillRepositoryTreeNodeModel = SkillFormModel | SkillRepositoryModel;
