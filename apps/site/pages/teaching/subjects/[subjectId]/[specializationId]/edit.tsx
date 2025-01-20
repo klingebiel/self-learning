@@ -4,6 +4,7 @@ import { useRequiredSession } from "@self-learning/ui/layouts";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/router";
 import { SpecializationEditor } from "../create";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function SpecializationEditPage() {
 	useRequiredSession();
@@ -42,4 +43,12 @@ export default function SpecializationEditPage() {
 			)}
 		</div>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

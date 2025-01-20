@@ -5,6 +5,7 @@ import { showToast } from "@self-learning/ui/common";
 import { AdminGuard } from "@self-learning/ui/layouts";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/router";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function SubjectCreatePage() {
 	const { mutateAsync: createSubject } = trpc.subject.create.useMutation();
@@ -50,4 +51,12 @@ export default function SubjectCreatePage() {
 			</div>
 		</AdminGuard>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

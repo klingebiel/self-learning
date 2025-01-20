@@ -3,6 +3,7 @@ import { CourseEditor, CourseFormModel } from "@self-learning/teaching";
 import { showToast } from "@self-learning/ui/common";
 import { Unauthorized, useRequiredSession } from "@self-learning/ui/layouts";
 import { useRouter } from "next/router";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function CreateCoursePage() {
 	const { mutateAsync: createCourse } = trpc.course.create.useMutation();
@@ -59,4 +60,12 @@ export default function CreateCoursePage() {
 			)}
 		</>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

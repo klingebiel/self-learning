@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import superjson from "superjson";
 import { GlobalFeatures } from "../../_features";
 import "./styles.css";
+import { appWithTranslation } from "next-i18next";
 
 export default withTRPC<AppRouter>({
 	config() {
@@ -37,13 +38,11 @@ export default withTRPC<AppRouter>({
 			}
 		};
 	}
-})(CustomApp);
+})(appWithTranslation(CustomApp));
 
 function CustomApp({ Component, pageProps }: AppProps) {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const Layout = (Component as any).getLayout
-		? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(Component as any).getLayout(Component, pageProps)
+		? (Component as any).getLayout(Component, pageProps)
 		: null;
 
 	return (
@@ -54,7 +53,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
 			<PlausibleProvider
 				domain={process.env.NEXT_PUBLIC_PLAUSIBLE_OWN_DOMAIN ?? ""}
 				customDomain={process.env.NEXT_PUBLIC_PLAUSIBLE_CUSTOM_INSTANCE}
-				trackLocalhost={process.env.NODE_ENV === "development" ? true : false}
+				trackLocalhost={process.env.NODE_ENV === "development"}
 			>
 				<SessionProvider
 					session={pageProps.session}

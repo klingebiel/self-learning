@@ -9,6 +9,7 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import { hasAuthorPermission } from "@self-learning/ui/layouts";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type EditCourseProps = {
 	course: CourseFormModel;
@@ -18,6 +19,7 @@ type EditCourseProps = {
 export const getServerSideProps: GetServerSideProps<EditCourseProps> = withAuth<EditCourseProps>(
 	async (ctx, user) => {
 		const courseId = ctx.params?.courseId as string;
+		const { locale } = ctx;
 
 		const course = await database.course.findUnique({
 			where: { courseId },
@@ -90,7 +92,11 @@ export const getServerSideProps: GetServerSideProps<EditCourseProps> = withAuth<
 
 		return {
 			notFound: !course,
-			props: { course: courseFormModel, lessons }
+			props: {
+				course: courseFormModel,
+				lessons,
+				...(await serverSideTranslations(locale ?? "en", ["common"]))
+			}
 		};
 	}
 );
@@ -128,6 +134,7 @@ export default function EditCoursePage({ course, lessons }: EditCourseProps) {
 				});
 			}
 		}
+
 		update();
 	}
 

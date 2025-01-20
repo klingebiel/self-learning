@@ -13,24 +13,31 @@ import { TRPCClientError } from "@trpc/client";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 interface PageProps {
 	settings: NonNullable<ResolvedValue<typeof getUserWithSettings>>;
 }
 
-export const getServerSideProps: GetServerSideProps = withAuth<PageProps>(async (_, user) => {
-	const settings = await getUserWithSettings(user.name);
+export const getServerSideProps: GetServerSideProps<PageProps> = withAuth<PageProps>(
+	async (context, user) => {
+		const settings = await getUserWithSettings(user.name);
+		const { locale } = context;
 
-	if (!settings) {
+		if (!settings) {
+			return {
+				notFound: true
+			};
+		}
+
 		return {
-			notFound: true
+			props: {
+				...(await serverSideTranslations(locale ?? "en", ["common"])),
+				settings
+			}
 		};
 	}
-
-	return {
-		props: { settings }
-	};
-});
+);
 
 export default function SettingsPage(props: PageProps) {
 	const [settings, setSettings] = useState(props.settings);

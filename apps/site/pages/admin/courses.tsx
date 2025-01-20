@@ -12,6 +12,7 @@ import { AdminGuard, CenteredSection, useRequiredSession } from "@self-learning/
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function CoursesPage() {
 	const router = useRouter();
@@ -89,4 +90,12 @@ export default function CoursesPage() {
 			)}
 		</CenteredSection>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

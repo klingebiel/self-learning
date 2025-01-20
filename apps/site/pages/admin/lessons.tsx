@@ -7,6 +7,7 @@ import { formatDateAgo } from "@self-learning/util/common";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function LessonManagementPage() {
 	const router = useRouter();
@@ -99,4 +100,12 @@ export default function LessonManagementPage() {
 			)}
 		</CenteredSection>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

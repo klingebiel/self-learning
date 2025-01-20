@@ -13,6 +13,7 @@ import { formatTimeIntervalToString } from "@self-learning/util/common";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export async function findMandyLtb({ username }: { username: string }) {
 	const entries = await database.learningDiaryPage.findMany({
@@ -47,9 +48,12 @@ export async function findMandyLtb({ username }: { username: string }) {
 
 export type LearningDiaryPageOverview = ResolvedValue<typeof findMandyLtb>[number];
 
-export const getServerSideProps: GetServerSideProps = withAuth(async (_, user) => {
+export const getServerSideProps: GetServerSideProps = withAuth(async (context, user) => {
+	const { locale } = context;
+
 	return {
 		props: {
+			...(await serverSideTranslations(locale ?? "en", ["common"])),
 			learningDiaryEntries: await findMandyLtb({
 				username: user.name
 			})

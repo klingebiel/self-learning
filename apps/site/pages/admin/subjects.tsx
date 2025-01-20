@@ -3,6 +3,7 @@ import { trpc } from "@self-learning/api-client";
 import { AuthorChip, ImageOrPlaceholder, LoadingBox } from "@self-learning/ui/common";
 import { AdminGuard, CenteredSection, useRequiredSession } from "@self-learning/ui/layouts";
 import Link from "next/link";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function SubjectsPage() {
 	const { data: subjects } = trpc.subject.getAllForAdminPage.useQuery();
@@ -64,4 +65,12 @@ export default function SubjectsPage() {
 			)}
 		</CenteredSection>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

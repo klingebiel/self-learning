@@ -16,6 +16,7 @@ import { Fragment, useMemo, useState } from "react";
 import { License } from "@self-learning/types";
 import Link from "next/link";
 import { ShareIcon } from "@heroicons/react/24/outline";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function LicensesPage() {
 	useRequiredSession();
@@ -219,4 +220,12 @@ export function LicenseDetail({ license }: { license: License }) {
 			)}
 		</div>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

@@ -20,6 +20,7 @@ import { MDXRemote } from "next-mdx-remote";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type Course = ResolvedValue<typeof getCourse>;
 
@@ -108,34 +109,30 @@ type CourseProps = {
 	markdownDescription: CompiledMarkdown | null;
 };
 
-export const getServerSideProps: GetServerSideProps<CourseProps> = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps<CourseProps> = async ({ params, locale }) => {
 	const courseSlug = params?.courseSlug as string | undefined;
-
 	if (!courseSlug) {
 		throw new Error("No slug provided.");
 	}
 
 	const course = await getCourse(courseSlug);
-
 	if (!course) {
 		return { notFound: true };
 	}
 
 	const content = await mapCourseContent(course.content as CourseContent);
-
 	let markdownDescription = null;
 
-	if (course) {
-		if (course.description && course.description.length > 0) {
-			markdownDescription = await compileMarkdown(course.description);
-			course.description = null;
-		}
+	if (course.description && course.description.length > 0) {
+		markdownDescription = await compileMarkdown(course.description);
+		course.description = null;
 	}
 
 	const summary = createCourseSummary(content);
 
 	return {
 		props: {
+			...(await serverSideTranslations(locale ?? "en", ["common"])),
 			course: JSON.parse(JSON.stringify(course)) as Defined<typeof course>,
 			summary,
 			content,

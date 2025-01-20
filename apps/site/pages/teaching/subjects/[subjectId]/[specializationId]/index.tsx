@@ -18,6 +18,7 @@ import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function SpecializationManagementPage() {
 	const router = useRouter();
@@ -235,4 +236,12 @@ export default function SpecializationManagementPage() {
 	);
 
 	return;
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

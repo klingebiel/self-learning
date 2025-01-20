@@ -22,6 +22,7 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useReducer } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type Student = Awaited<ReturnType<typeof getStudent>>;
 
@@ -189,7 +190,9 @@ async function loadMostRecentLessons({
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
+	const { locale } = ctx;
 	const user = await getAuthenticatedUser(ctx);
+
 	if (!user || !user.name) {
 		return {
 			redirect: {
@@ -204,6 +207,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
 
 	return {
 		props: {
+			...(await serverSideTranslations(locale ?? "en", ["common"])),
 			student,
 			recentLessons
 		}

@@ -15,15 +15,20 @@ import { UniversalSearchBar } from "@self-learning/ui/layouts";
 import { EnrollmentDetails, getEnrollmentDetails } from "@self-learning/enrollment";
 import { formatDateAgo } from "@self-learning/util/common";
 import { withAuth } from "@self-learning/api";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 interface CourseOverviewProps {
 	enrollments: EnrollmentDetails[] | null;
 }
+
 export const getServerSideProps: GetServerSideProps = withAuth<CourseOverviewProps>(
-	async (_, user) => {
+	async (context, user) => {
+		const { locale } = context;
+
 		try {
 			return {
 				props: {
+					...(await serverSideTranslations(locale ?? "en", ["common"])),
 					enrollments: await getEnrollmentDetails(user.name)
 				}
 			};
@@ -31,12 +36,14 @@ export const getServerSideProps: GetServerSideProps = withAuth<CourseOverviewPro
 			console.error("Error fetching enrollments:", error);
 			return {
 				props: {
+					...(await serverSideTranslations(locale ?? "en", ["common"])),
 					enrollments: null
 				}
 			};
 		}
 	}
 );
+
 export default function CourseOverview({ enrollments }: CourseOverviewProps) {
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [inProgress, setInProgress] = useState<EnrollmentDetails[]>([]);

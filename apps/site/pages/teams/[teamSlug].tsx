@@ -3,9 +3,10 @@ import { CompiledMarkdown, compileMarkdown } from "@self-learning/markdown";
 import { ResolvedValue } from "@self-learning/types";
 import { AuthorChip } from "@self-learning/ui/common";
 import { CenteredSection } from "@self-learning/ui/layouts";
-import { GetStaticPaths, GetStaticProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
 import Image from "next/image";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { GetServerSideProps } from "next";
 
 type Team = ResolvedValue<typeof getTeam>;
 
@@ -14,7 +15,7 @@ type TeamPageProps = {
 	markdownDescription: CompiledMarkdown | null;
 };
 
-export const getStaticProps: GetStaticProps<TeamPageProps> = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps<TeamPageProps> = async ({ params, locale }) => {
 	const slug = params?.teamSlug;
 
 	if (typeof slug !== "string") {
@@ -24,29 +25,28 @@ export const getStaticProps: GetStaticProps<TeamPageProps> = async ({ params }) 
 	const team = await getTeam(slug);
 
 	if (!team) {
+		// Return a 404 if no matching team was found
 		return { notFound: true };
 	}
 
 	let markdownDescription = null;
 
 	if (team.description && team.description.length > 0) {
+		// Compile markdown if present
 		markdownDescription = await compileMarkdown(team.description);
+		// Remove the original description so it's not duplicated
 		team.description = null;
 	}
 
 	return {
 		props: {
+			// The `team` data you want to use in your page
 			team: team as Team,
-			markdownDescription
-		},
-		notFound: !team
-	};
-};
-
-export const getStaticPaths: GetStaticPaths = () => {
-	return {
-		fallback: "blocking",
-		paths: []
+			// The compiled markdown string (or null)
+			markdownDescription,
+			// Include translations for SSR
+			...(await serverSideTranslations(locale ?? "en", ["common"]))
+		}
 	};
 };
 

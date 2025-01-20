@@ -3,6 +3,7 @@ import { SubjectEditor } from "@self-learning/teaching";
 import { Subject, subjectSchema } from "@self-learning/types";
 import { LoadingBox, showToast } from "@self-learning/ui/common";
 import { useRouter } from "next/router";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function SubjectEditPage() {
 	const { subjectId } = useRouter().query;
@@ -39,4 +40,12 @@ export default function SubjectEditPage() {
 			)}
 		</div>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

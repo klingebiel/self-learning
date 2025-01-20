@@ -6,13 +6,15 @@ import { ItemCardGrid, TopicHeader } from "@self-learning/ui/layouts";
 import { VoidSvg } from "@self-learning/ui/static";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type SpecializationPageProps = {
 	specialization: ResolvedValue<typeof getSpecialization>;
 };
 
 export const getServerSideProps: GetServerSideProps<SpecializationPageProps> = async ({
-	params
+	params,
+	locale
 }) => {
 	const specializationSlug = params?.specializationSlug;
 
@@ -24,6 +26,7 @@ export const getServerSideProps: GetServerSideProps<SpecializationPageProps> = a
 
 	return {
 		props: {
+			...(await serverSideTranslations(locale ?? "en", ["common"])),
 			specialization: specialization as Defined<typeof specialization>
 		},
 		notFound: !specialization

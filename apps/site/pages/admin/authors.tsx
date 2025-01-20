@@ -14,6 +14,7 @@ import { AdminGuard, CenteredSection, useRequiredSession } from "@self-learning/
 import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { Fragment, useMemo, useState } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function AuthorsPage() {
 	useRequiredSession();
@@ -144,4 +145,12 @@ export default function AuthorsPage() {
 			</CenteredSection>
 		</AdminGuard>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

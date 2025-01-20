@@ -15,6 +15,7 @@ import { TRPCClientError } from "@trpc/client";
 import { OpenAsJsonButton } from "@self-learning/ui/forms";
 import { useRouter } from "next/router";
 import { FormProvider, useForm } from "react-hook-form";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function SpecializationPage() {
 	useRequiredSession();
@@ -207,4 +208,12 @@ export function SpecializationEditor({
 			</form>
 		</FormProvider>
 	);
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ["common"]))
+		}
+	};
 }

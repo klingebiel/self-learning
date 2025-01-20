@@ -4,32 +4,25 @@
 	"license": "MIT",
 	"scripts": {
 		"postinstall": "prisma generate --no-hints",
-		
 		"start": "nx serve",
 		"start:dev": "node scripts/dev-start.js",
 		"start:standalone": "cd dist/apps/site && npm start",
 		"start:prod": "npm run migrate && npm run start:standalone",
 		"start:demo": "npm run seed && npm run start:standalone",
-		
 		"cypress": "cypress open --project=apps/site-e2e",
 		"jest": "env TZ='Europe/Berlin' jest",
-		
 		"format:check": "nx format:check --files '{apps,libs}/**/*.{ts,tsx}'",
 		"format:write": "nx format:write --files '{apps,libs}/**/*.{ts,tsx}'",
-		
 		"prebuild": "npm run prisma generate --no-hints",
 		"build": "nx build",
-		
 		"test": "env TZ='Europe/Berlin' nx run-many --target=test --all --parallel --maxParallel=4",
 		"test:pr": "nx affected --base origin/master -t lint build test",
 		"posttest:pr": "echo 'If this fails, run the failed task to see errors.",
 		"test:migrate": "prisma db execute --file=scripts/reset.sql --schema libs/data-access/database/prisma/schema && npm run migrate",
-
 		"prisma": "prisma",
 		"seed": "prisma generate && prisma db push --accept-data-loss && prisma db seed",
 		"migrate": "tsx libs/data-access/database/prisma/deploy-migrations.ts"
 	},
-
 	"private": true,
 	"prisma": {
 		"schema": "libs/data-access/database/prisma/schema",
@@ -63,11 +56,15 @@
 		"framer-motion": "^11.3.21",
 		"gray-matter": "^4.0.3",
 		"http-status-codes": "^2.3.0",
+		"i18next": "^24.1.0",
+		"i18next-browser-languagedetector": "^8.0.2",
+		"i18next-http-backend": "^3.0.1",
 		"jszip": "^3.10.1",
 		"jwt-decode": "^4.0.0",
 		"minio": "^8.0.1",
 		"next": "14.2.5",
 		"next-auth": "^4.24.7",
+		"next-i18next": "^15.4.0",
 		"next-mdx-remote": "^5.0.0",
 		"next-plausible": "^3.12.0",
 		"next-superjson-plugin": "^0.6.3",
@@ -79,6 +76,7 @@
 		"react-dom": "18.3.1",
 		"react-hook-form": "^7.52.1",
 		"react-hot-toast": "^2.4.1",
+		"react-i18next": "^15.2.0",
 		"react-is": "18.3.1",
 		"react-markdown": "^9.0.1",
 		"react-player": "^2.16.0",

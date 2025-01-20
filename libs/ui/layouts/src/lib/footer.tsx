@@ -1,5 +1,8 @@
 import { LinkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { DropdownButton } from "@self-learning/ui/common";
+import { FlagIcon } from "@heroicons/react/20/solid";
+import { useTranslation } from "next-i18next";
 
 function FooterElement({
 	href,
@@ -18,6 +21,8 @@ function FooterElement({
 }
 
 export function Footer() {
+	const { t } = useTranslation("common");
+
 	return (
 		<footer className="border-t-gray border-t bg-white px-6 py-2 text-light">
 			<div
@@ -49,8 +54,34 @@ export function Footer() {
 						href="https://www.uni-hildesheim.de/impressum/"
 						text="Impressum"
 					/>
+					<LanguageSwitcher />
 				</div>
 			</div>
 		</footer>
+	);
+}
+
+function LanguageSwitcher() {
+	const { i18n, t } = useTranslation("common");
+
+	return (
+		<DropdownButton position="top" title="Test" backgroundColor="flex">
+			<span className={"text-sm font-medium hover:text-secondary"}>{t("pickLanguage")}</span>
+			<div className="flex flex-col bg-white">
+				<button
+					className={"hover:text-secondary"}
+					onClick={() => i18n.changeLanguage("de")}
+				>
+					{t("languageGerman")}
+				</button>
+				<button
+					className={"hover:text-secondary"}
+					onClick={() => i18n.changeLanguage("en")}
+				>
+					{" "}
+					{t("languageEnglish")}
+				</button>
+			</div>
+		</DropdownButton>
 	);
 }

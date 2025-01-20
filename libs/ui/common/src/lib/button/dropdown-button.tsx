@@ -6,12 +6,14 @@ export function DropdownButton({
 	backgroundColor,
 	chevronColor,
 	hover,
-	children
+	children,
+	position = "bottom"
 }: {
 	title: string;
 	backgroundColor?: string;
 	chevronColor?: string;
 	hover?: string;
+	position?: "top" | "bottom";
 	children: ReactNode;
 }) {
 	const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +31,9 @@ export function DropdownButton({
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
+
+	// Determine the positioning classes based on the `position` prop.
+	const positionClasses = position === "top" ? "bottom-full" : "top-full";
 
 	return (
 		<div className="relative" ref={dropdownRef}>
@@ -49,13 +54,12 @@ export function DropdownButton({
 							className={`h-5 w-5 ${chevronColor ? chevronColor : ""}`}
 						/>
 					)}
-					{/*First Child Prop is used to Display the Button Text*/}
 					{childrenArray[0]}
 				</button>
 			</div>
 			{isOpen && (
 				<div
-					className="absolute w-full overflow-auto bg-transparent shadow-md"
+					className={`absolute ${positionClasses} w-full overflow-auto bg-transparent shadow-md`}
 					onClick={() => setIsOpen(false)}
 				>
 					{withoutFirst}

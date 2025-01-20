@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { withNx } = require("@nx/next");
 const { withPlausibleProxy } = require("next-plausible");
+const { i18n } = require("./next-i18next.config.js");
 
 const packageJson = require("../../package.json");
 
@@ -21,7 +22,7 @@ const nextConfig = {
 		// See: https://github.com/gregberge/svgr
 		svgr: true
 	},
-
+	i18n,
 	basePath: process.env.NEXT_PUBLIC_BASE_PATH ?? "",
 	assetPrefix: process.env.NEXT_ASSET_PREFIX,
 	trailingSlash: process.env.NEXT_TRAILING_SLASH ?? false,

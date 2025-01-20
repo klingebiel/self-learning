@@ -8,6 +8,7 @@ import { OnDialogCloseFn } from "@self-learning/ui/common";
 import { useRouter } from "next/router";
 import { trpc } from "@self-learning/api-client";
 import { hasAuthorPermission } from "@self-learning/ui/layouts";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type EditLessonProps = {
 	lesson: LessonFormModel;
@@ -16,6 +17,7 @@ type EditLessonProps = {
 export const getServerSideProps: GetServerSideProps = withAuth<EditLessonProps>(
 	async (ctx, user) => {
 		const lessonId = ctx.params?.lessonId;
+		const { locale } = ctx;
 
 		if (typeof lessonId !== "string") {
 			throw new Error("No [lessonId] provided.");
@@ -81,7 +83,10 @@ export const getServerSideProps: GetServerSideProps = withAuth<EditLessonProps>(
 		};
 
 		return {
-			props: { lesson: lessonForm }
+			props: {
+				lesson: lessonForm,
+				...(await serverSideTranslations(locale ?? "en", ["common"]))
+			}
 		};
 	}
 );

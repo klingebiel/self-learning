@@ -7,6 +7,7 @@ import { LoadingBox } from "@self-learning/ui/common";
 import { SkillFormModel } from "@self-learning/types";
 import { SkillRepository } from "@prisma/client";
 import { SkillFolderEditor } from "@self-learning/teaching";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 interface CreateAndViewRepositoryProps {
 	repository: SkillRepository;
@@ -35,6 +36,7 @@ async function createNewRepository(userName: string) {
 export const getServerSideProps: GetServerSideProps<CreateAndViewRepositoryProps> = async ctx => {
 	const repoId = ctx.query.repoSlug as string;
 	const user = await getAuthenticatedUser(ctx);
+	const { locale } = ctx;
 
 	if (!user) {
 		return {
@@ -56,7 +58,14 @@ export const getServerSideProps: GetServerSideProps<CreateAndViewRepositoryProps
 
 	const transformedSkill = await getSkills(repoId);
 
-	return { props: { repository: repo, initialSkills: transformedSkill }, notFound: false };
+	return {
+		props: {
+			repository: repo,
+			initialSkills: transformedSkill
+		},
+		...(await serverSideTranslations(locale ?? "en", ["common"])),
+		notFound: false
+	};
 };
 
 export default function CreateAndViewRepository({

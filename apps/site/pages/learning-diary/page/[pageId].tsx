@@ -11,8 +11,10 @@ import {
 import { Divider } from "@self-learning/ui/common";
 import { subMilliseconds } from "date-fns";
 import { GetServerSideProps } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const getServerSideProps: GetServerSideProps = withAuth(async (context, user) => {
+	const { locale } = context;
 	const pageId = context.params?.pageId;
 	const pages = await allPages(user.name);
 	const availableStrategies = await getAllStrategies();
@@ -26,6 +28,7 @@ export const getServerSideProps: GetServerSideProps = withAuth(async (context, u
 
 	return {
 		props: {
+			...(await serverSideTranslations(locale ?? "en", ["common"])),
 			diaryId: pageId,
 			pages,
 			availableStrategies
