@@ -2,7 +2,7 @@ import { getServerSideProps } from "../../../pages/teaching/courses/edit/[course
 import { database } from "@self-learning/database";
 import { getServerSession } from "next-auth";
 import { createMockContext } from "../../context-utils";
-import { createCourseMock, createLessonMock } from "../../mock-data-utils";
+import { createCourseMock, createLessonMock } from "@self-learning/util/testing";
 
 // Mocks getServerSession of withAuth procedure to mock User object
 // ESM support & default mock required by NextAuth

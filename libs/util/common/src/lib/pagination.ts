@@ -29,5 +29,8 @@ export function paginate(take: number, page: number): { skip: number; take: numb
 }
 
 export const paginationSchema = z.object({
-	page: z.number().positive()
+	page: z
+		.number()
+		.positive()
+		.describe('Page number, starting at 1. Use "page=1" for the first page.')
 });

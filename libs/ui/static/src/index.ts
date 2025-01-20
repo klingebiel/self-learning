@@ -11,6 +11,7 @@ import { ReactComponent as MarketingSvg } from "./assets/svg/marketing.svg";
 import { ReactComponent as OverviewSvg } from "./assets/svg/overview.svg";
 import { ReactComponent as ProgressSvg } from "./assets/svg/progress.svg";
 import { ReactComponent as TargetSvg } from "./assets/svg/target.svg";
+import { ReactComponent as CodingSvg } from "./assets/svg/coding.svg";
 
 export {
 	AuthorSvg,
@@ -25,5 +26,6 @@ export {
 	MarketingSvg,
 	OverviewSvg,
 	ProgressSvg,
-	TargetSvg
+	TargetSvg,
+	CodingSvg
 };

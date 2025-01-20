@@ -6,7 +6,7 @@ import {
 	mapCourseFormToInsert,
 	mapCourseFormToUpdate
 } from "@self-learning/teaching";
-import { CourseContent, extractLessonIds, LessonMeta } from "@self-learning/types";
+import { CourseContent, CourseMeta, extractLessonIds, LessonMeta } from "@self-learning/types";
 import { getRandomId, paginate, Paginated, paginationSchema } from "@self-learning/util/common";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -14,6 +14,117 @@ import { authProcedure, isCourseAuthorProcedure, t } from "../trpc";
 import { UserFromSession } from "../context";
 
 export const courseRouter = t.router({
+	listAvailableCourses: t.procedure
+		.meta({
+			openapi: {
+				enabled: true,
+				method: "GET",
+				path: "/courses",
+				tags: ["Courses"],
+				summary: "Search available courses"
+			}
+		})
+		.input(
+			paginationSchema.extend({
+				title: z
+					.string()
+					.describe(
+						"Title of the course to search for. Keep empty to list all; includes insensitive search and contains search."
+					)
+					.optional(),
+				specializationId: z
+					.string()
+					.describe("Filter by assigned specializations")
+					.optional(),
+				authorId: z.string().describe("Filter by author username").optional(),
+				pageSize: z.number().describe("Number of results per page").optional()
+			})
+		)
+		.output(
+			z.object({
+				result: z.array(z.object({ title: z.string(), slug: z.string() })),
+				pageSize: z.number(),
+				page: z.number(),
+				totalCount: z.number()
+			})
+		)
+		.query(async ({ input }) => {
+			const pageSize = input.pageSize ?? 20;
+
+			const where: Prisma.CourseWhereInput = {
+				title:
+					input.title && input.title.length > 0
+						? { contains: input.title, mode: "insensitive" }
+						: undefined,
+				specializations: input.specializationId
+					? { some: { specializationId: input.specializationId } }
+					: undefined,
+				authors: input.authorId ? { some: { username: input.authorId } } : undefined
+			};
+
+			const result = await database.course.findMany({
+				select: {
+					slug: true,
+					title: true
+				},
+				...paginate(pageSize, input.page),
+				orderBy: { title: "asc" },
+				where
+			});
+
+			return {
+				result,
+				pageSize: pageSize,
+				page: input.page,
+				totalCount: result.length
+			} satisfies Paginated<{ title: string; slug: string }>;
+		}),
+	getCourseData: t.procedure
+		.meta({
+			openapi: {
+				enabled: true,
+				method: "GET",
+				path: "/courses/{slug}",
+				tags: ["Courses"],
+				summary: "Get course description by slug"
+			}
+		})
+		.input(
+			z.object({
+				slug: z.string().describe("Unique slug of the course to get")
+			})
+		)
+		.output(
+			z.object({
+				title: z.string(),
+				subtitle: z.string(),
+				slug: z.string(),
+				lessons: z.number(),
+				description: z.string().nullable()
+			})
+		)
+		.query(async ({ input }) => {
+			const course = await database.course.findUnique({
+				where: {
+					slug: input.slug
+				}
+			});
+
+			if (!course) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: `Course not found for slug: ${input.slug}`
+				});
+			}
+
+			return {
+				title: course.title,
+				subtitle: course.subtitle,
+				slug: course.slug,
+				lessons: (course.meta as CourseMeta).lessonCount,
+				description: course.description
+			};
+		}),
 	findMany: t.procedure
 		.input(
 			paginationSchema.extend({

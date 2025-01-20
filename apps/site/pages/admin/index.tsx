@@ -1,5 +1,5 @@
 import { AdminGuard, CenteredSection, useRequiredSession } from "@self-learning/ui/layouts";
-import { EnvStudySvg } from "@self-learning/ui/static";
+import { CodingSvg, EnvStudySvg } from "@self-learning/ui/static";
 import { SoftwareEngineerSvg } from "@self-learning/ui/static";
 import { PersonalInformationSvg } from "@self-learning/ui/static";
 import { TutorialSvg } from "@self-learning/ui/static";
@@ -50,6 +50,11 @@ export default function AdminPage() {
 					href="/admin/users"
 					imageElement={<PersonalInformationSvg />}
 					title="Nutzer:innen verwalten"
+				/>
+				<Card
+					href="/admin/api-docs"
+					imageElement={<CodingSvg />}
+					title="REST API Dokumentation (OpenAPI)"
 				/>
 			</div>
 			<div className="text-center text-sm text-gray-500 mt-8">
